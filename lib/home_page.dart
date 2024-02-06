@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:realtime_talk/providers/record_provider.dart';
+import 'package:realtime_talk/providers/sound_files_provider.dart';
 import 'package:realtime_talk/providers/timer_provider.dart';
 
 class MyHomePage extends StatelessWidget {
@@ -19,8 +20,7 @@ class MyHomePage extends StatelessWidget {
           SizedBox(height: 16),
           _RecordButtons(),
           SizedBox(height: 16),
-          Divider(),
-          _ViewPathList(),
+          _ViewRecordList(),
         ],
       ),
     );
@@ -60,52 +60,51 @@ class _ViewTimer extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final timer = ref.watch(timerProvider);
     final isRunning = ref.watch(isRecordingProvider);
+    final color = isRunning ? Colors.red : Colors.green;
 
     return Column(
       children: [
         Text(
           isRunning ? '録音中' : '停止',
-          style: TextStyle(
-            color: isRunning ? Colors.red : Colors.green,
-            fontSize: 36,
-          ),
+          style: TextStyle(color: color, fontSize: 36),
         ),
-        Text('録音 $timer 秒'),
+        Text('録音時間: $timer 秒', style: TextStyle(color: color)),
       ],
     );
   }
 }
 
-class _ViewPathList extends ConsumerWidget {
-  const _ViewPathList();
+class _ViewRecordList extends ConsumerWidget {
+  const _ViewRecordList();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final paths = ref.watch(recordFilePathsProvider);
+    final soundFile = ref.watch(soundFilesProvider);
     return Flexible(
       child: ListView.builder(
-        itemCount: paths.length,
+        itemCount: soundFile.length,
         itemBuilder: (context, index) {
-          return _RowPath(paths[index]);
+          return _RowSoundData(soundFile[index]);
         },
       ),
     );
   }
 }
 
-class _RowPath extends StatelessWidget {
-  const _RowPath(this.path);
-  final String path;
+class _RowSoundData extends StatelessWidget {
+  const _RowSoundData(this.soundFile);
+  final SoundFile soundFile;
 
   @override
   Widget build(BuildContext context) {
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       child: Tooltip(
-        message: path,
+        message: soundFile.soundFilePath,
         child: Card(
           child: ListTile(
-            title: Text(path.split('/').last, overflow: TextOverflow.ellipsis),
+            title: Text(soundFile.fileName(), overflow: TextOverflow.ellipsis),
+            subtitle: Text('録音時間: ${soundFile.recordTime}秒'),
           ),
         ),
       ),

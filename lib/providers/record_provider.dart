@@ -4,6 +4,7 @@ import 'package:path/path.dart' as path;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:realtime_talk/common/app_logger.dart';
+import 'package:realtime_talk/providers/sound_files_provider.dart';
 import 'package:realtime_talk/providers/timer_provider.dart';
 import 'package:record/record.dart';
 
@@ -53,17 +54,17 @@ class RecordNotifier extends Notifier<AudioRecorder> {
 
   Future<void> stop() async {
     final path = await state.stop();
+    _stopTimer();
     if (path != null) {
       AppLogger.d('Stop of Record. File to $path.');
-      final oldList = ref.read(recordFilePathsProvider);
-      ref.read(recordFilePathsProvider.notifier).state = [path, ...oldList];
+      final time = ref.read(timerProvider);
+      ref.read(soundFilesProvider.notifier).add(filePath: path, time: time);
     }
-    _stopTimer();
   }
 
   Future<String> _getPath() async {
     final dir = await getApplicationCacheDirectory();
-    return path.join(dir.path, 'audio_${DateTime.now().millisecondsSinceEpoch}.m4a');
+    return path.join(dir.path, '${DateTime.now().millisecondsSinceEpoch}.m4a');
   }
 
   void _startTimer() {
@@ -82,5 +83,3 @@ class RecordNotifier extends Notifier<AudioRecorder> {
 }
 
 final isRecordingProvider = StateProvider<bool>((ref) => false);
-
-final recordFilePathsProvider = StateProvider<List<String>>((_) => []);
