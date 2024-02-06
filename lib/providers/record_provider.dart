@@ -4,7 +4,7 @@ import 'package:path/path.dart' as path;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:realtime_talk/common/app_logger.dart';
-import 'package:realtime_talk/models/timer_provider.dart';
+import 'package:realtime_talk/providers/timer_provider.dart';
 import 'package:record/record.dart';
 
 final recordProvider = NotifierProvider<RecordNotifier, AudioRecorder>(RecordNotifier.new);

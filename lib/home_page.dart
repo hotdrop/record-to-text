@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:realtime_talk/models/record_provider.dart';
-import 'package:realtime_talk/models/timer_provider.dart';
+import 'package:realtime_talk/providers/record_provider.dart';
+import 'package:realtime_talk/providers/timer_provider.dart';
 
 class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key});
