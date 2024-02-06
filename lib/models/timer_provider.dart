@@ -17,9 +17,8 @@ class TimerNotifier extends Notifier<int> {
 
   void start() {
     _timer?.cancel();
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      state++;
-    });
+    state = 0;
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) => state++);
   }
 
   void stop() {
