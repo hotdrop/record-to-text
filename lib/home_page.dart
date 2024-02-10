@@ -64,10 +64,7 @@ class _ViewTimer extends ConsumerWidget {
 
     return Column(
       children: [
-        Text(
-          isRunning ? '録音中' : '停止',
-          style: TextStyle(color: color, fontSize: 36),
-        ),
+        Text(isRunning ? '録音中' : '停止', style: TextStyle(color: color, fontSize: 36)),
         Text('録音時間: $timer 秒', style: TextStyle(color: color)),
       ],
     );

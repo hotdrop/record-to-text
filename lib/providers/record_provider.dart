@@ -11,10 +11,14 @@ import 'package:record/record.dart';
 final recordProvider = NotifierProvider<RecordNotifier, AudioRecorder>(RecordNotifier.new);
 
 class RecordNotifier extends Notifier<AudioRecorder> {
+  Timer? _segmentTimer;
+  int _elapsedTime = 0;
+
   @override
   AudioRecorder build() {
     ref.onDispose(() {
       state.dispose();
+      _segmentTimer?.cancel();
     });
     return AudioRecorder();
   }
@@ -22,63 +26,52 @@ class RecordNotifier extends Notifier<AudioRecorder> {
   Future<void> start() async {
     try {
       if (await state.hasPermission()) {
-        _startTimer();
-        final filePath = await _getPath();
         const config = RecordConfig(encoder: AudioEncoder.aacLc);
-        await state.start(config, path: filePath);
+        // 初回録音を実行し、以降は一定間隔で録音データを管理する
+        ref.read(timerProvider.notifier).start();
+        await state.start(config, path: await _getPath());
+        await _onLoadLoopRecording(config);
       }
     } catch (e, s) {
-      _stopTimer();
+      _segmentTimer?.cancel();
       AppLogger.e('録画開始処理でエラー', error: e, s: s);
       rethrow;
     }
   }
 
-  ///
-  /// streamはうまくいかなかった
-  ///
-  // Future<void> _recordStream() async {
-  //   final path = await _getPath();
-  //   final file = File(path);
-  //   // numChannels 1は長さ0になる 2は6倍くらいになる 3はエラー
-  //   const config = RecordConfig(encoder: AudioEncoder.pcm16bits);
-  //   final stream = await state.startStream(config);
-  //   stream.listen((event) {
-  //     file.writeAsBytesSync(event, mode: FileMode.append);
-  //   }, onDone: () {
-  //     AppLogger.d('End of stream. File written to $path.');
-  //     final oldList = ref.read(recordFilePathsProvider);
-  //     ref.read(recordFilePathsProvider.notifier).state = [path, ...oldList];
-  //   });
-  // }
-
   Future<void> stop() async {
-    final path = await state.stop();
-    _stopTimer();
-    if (path != null) {
-      AppLogger.d('Stop of Record. File to $path.');
-      final time = ref.read(timerProvider);
-      ref.read(soundFilesProvider.notifier).add(filePath: path, time: time);
+    await _saveCurrentSegment();
+    _segmentTimer?.cancel();
+    ref.read(timerProvider.notifier).stop();
+    ref.read(isRecordingProvider.notifier).state = false;
+  }
+
+  Future<void> _onLoadLoopRecording(RecordConfig config) async {
+    // X分ごとに音声データを保存する
+    _segmentTimer = Timer.periodic(const Duration(minutes: 5), (timer) async {
+      // 現在のセグメントを保存し、音声データを生成
+      await _saveCurrentSegment();
+      // 新しいセグメントの録音を開始
+      await state.start(config, path: await _getPath());
+    });
+    ref.read(isRecordingProvider.notifier).state = true;
+  }
+
+  Future<void> _saveCurrentSegment() async {
+    final filePath = await state.stop();
+    if (filePath != null) {
+      AppLogger.d('Stop of Record. File to $filePath.');
+      ref.read(soundFilesProvider.notifier).add(
+            filePath: filePath,
+            time: ref.read(timerProvider) - _elapsedTime,
+          );
+      _elapsedTime = ref.read(timerProvider);
     }
   }
 
   Future<String> _getPath() async {
     final dir = await getApplicationCacheDirectory();
     return path.join(dir.path, '${DateTime.now().millisecondsSinceEpoch}.m4a');
-  }
-
-  void _startTimer() {
-    ref.read(timerProvider.notifier).start();
-    _updateRecordState(true);
-  }
-
-  void _stopTimer() {
-    ref.read(timerProvider.notifier).stop();
-    _updateRecordState(false);
-  }
-
-  void _updateRecordState(bool isRecording) {
-    ref.read(isRecordingProvider.notifier).state = isRecording;
   }
 }
 
