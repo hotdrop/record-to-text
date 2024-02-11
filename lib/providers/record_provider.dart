@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:realtime_talk/common/app_logger.dart';
 import 'package:realtime_talk/providers/app_setting_provider.dart';
-import 'package:realtime_talk/providers/sound_files_provider.dart';
+import 'package:realtime_talk/providers/record_files_provider.dart';
 import 'package:realtime_talk/providers/timer_provider.dart';
 import 'package:record/record.dart';
 
@@ -63,7 +63,7 @@ class RecordNotifier extends Notifier<AudioRecorder> {
     final filePath = await state.stop();
     if (filePath != null) {
       AppLogger.d('Stop of Record. File to $filePath.');
-      ref.read(soundFilesProvider.notifier).add(
+      ref.read(recordFilesProvider.notifier).add(
             filePath: filePath,
             time: ref.read(timerProvider) - _elapsedTime,
           );

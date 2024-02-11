@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:realtime_talk/providers/record_provider.dart';
-import 'package:realtime_talk/providers/sound_files_provider.dart';
+import 'package:realtime_talk/providers/record_files_provider.dart';
 import 'package:realtime_talk/providers/timer_provider.dart';
+import 'package:realtime_talk/ui/home/row_record_data.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -10,12 +11,9 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('ホーム'),
-      ),
+      appBar: AppBar(),
       body: const Column(
         children: [
-          Divider(),
           _ViewTimer(),
           SizedBox(height: 16),
           _RecordButtons(),
@@ -76,35 +74,12 @@ class _ViewRecordList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final soundFile = ref.watch(soundFilesProvider);
-    return Flexible(
-      child: ListView.builder(
-        itemCount: soundFile.length,
-        itemBuilder: (context, index) {
-          return _RowSoundData(soundFile[index]);
-        },
-      ),
-    );
-  }
-}
-
-class _RowSoundData extends StatelessWidget {
-  const _RowSoundData(this.soundFile);
-  final SoundFile soundFile;
-
-  @override
-  Widget build(BuildContext context) {
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      child: Tooltip(
-        message: soundFile.soundFilePath,
-        child: Card(
-          child: ListTile(
-            title: Text(soundFile.fileName(), overflow: TextOverflow.ellipsis),
-            subtitle: Text('録音時間: ${soundFile.recordTime}秒'),
-          ),
-        ),
-      ),
+    final recordFiles = ref.watch(recordFilesProvider);
+    return Wrap(
+      runSpacing: 8,
+      spacing: 8,
+      runAlignment: WrapAlignment.start,
+      children: recordFiles.map((e) => RowRecordData(recordFile: e)).toList(),
     );
   }
 }
