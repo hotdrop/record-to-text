@@ -8,7 +8,8 @@ class SoundRepository {
   final Ref ref;
 
   Future<String> speechToText(String filePath) async {
-    // TOD whisperAPIで文字起こしする
+    // TODO whisperAPIで文字起こしする
+    await Future<void>.delayed(const Duration(seconds: 3));
     return "こんにちわ。私はテストHogeです。よろしくお願いします。\nここは文字起こしの結果を表示します。";
   }
 
