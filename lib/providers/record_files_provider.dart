@@ -22,12 +22,12 @@ class RecordFilesNotifier extends Notifier<List<RecordFile>> {
       final text = await ref.read(soundRepositoryProvider).speechToText(recordFile.filePath);
       final newRecordFile = recordFile.copyWith(
         speechToText: text,
-        speechToTextState: RecordProcessStatus.success,
+        speechToTextStatus: SpeechToTextStatus.success,
       );
       _update(newRecordFile);
     } catch (e) {
       final newRecordFile = recordFile.copyWith(
-        speechToTextState: RecordProcessStatus.error,
+        speechToTextStatus: SpeechToTextStatus.error,
         errorMessage: '$e',
       );
       _update(newRecordFile);
@@ -60,26 +60,23 @@ class RecordFile {
     required this.filePath,
     required this.recordTime,
     this.speechToText,
-    this.speechToTextState = RecordProcessStatus.wait,
-    this.summarizedState = RecordProcessStatus.wait,
-    this.errorMessage,
+    this.speechToTextStatus = SpeechToTextStatus.wait,
+    this.speechToTextProcessErrorMessage,
   });
 
   final String id;
   final String filePath;
   final int recordTime;
-  final String? speechToText;
 
-  final RecordProcessStatus speechToTextState;
-  final RecordProcessStatus summarizedState;
-  final String? errorMessage;
+  final String? speechToText;
+  final SpeechToTextStatus speechToTextStatus;
+  final String? speechToTextProcessErrorMessage;
 
   String fileName() => filePath.split('/').last;
 
   RecordFile copyWith({
     String? speechToText,
-    RecordProcessStatus? speechToTextState,
-    RecordProcessStatus? summarizedState,
+    SpeechToTextStatus? speechToTextStatus,
     String? errorMessage,
   }) {
     return RecordFile(
@@ -87,13 +84,12 @@ class RecordFile {
       filePath: filePath,
       recordTime: recordTime,
       speechToText: speechToText ?? this.speechToText,
-      speechToTextState: speechToTextState ?? this.speechToTextState,
-      summarizedState: summarizedState ?? this.summarizedState,
+      speechToTextStatus: speechToTextStatus ?? this.speechToTextStatus,
     );
   }
 }
 
-enum RecordProcessStatus { wait, success, error }
+enum SpeechToTextStatus { wait, success, error }
 
 // ホーム画面で選択したRecordFileを保持する
 final selectRecordFileStateProvider = StateProvider<RecordFile?>((ref) => null);

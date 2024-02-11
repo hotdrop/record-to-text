@@ -25,12 +25,11 @@ class RowRecordData extends StatelessWidget {
               Text(recordFile.fileName(), overflow: TextOverflow.ellipsis),
               const Divider(),
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('録音: ${recordFile.recordTime}秒'),
+                  Text('録音:${recordFile.recordTime}秒'),
                   const SizedBox(width: 8),
-                  _statusIcon(recordFile.speechToTextState),
-                  const SizedBox(width: 8),
-                  _statusIcon(recordFile.summarizedState),
+                  _statusIcon(recordFile.speechToTextStatus),
                 ],
               ),
             ],
@@ -40,11 +39,11 @@ class RowRecordData extends StatelessWidget {
     );
   }
 
-  Widget _statusIcon(RecordProcessStatus status) {
+  Widget _statusIcon(SpeechToTextStatus status) {
     return switch (status) {
-      RecordProcessStatus.success => const Icon(Icons.check_circle, color: Colors.green),
-      RecordProcessStatus.error => const Icon(Icons.error, color: Colors.red),
-      RecordProcessStatus.wait => const Icon(Icons.hourglass_empty, color: Colors.amber),
+      SpeechToTextStatus.success => const Icon(Icons.check_circle, color: Colors.green),
+      SpeechToTextStatus.error => const Icon(Icons.error, color: Colors.red),
+      SpeechToTextStatus.wait => const Icon(Icons.hourglass_empty, color: Colors.amber),
     };
   }
 }

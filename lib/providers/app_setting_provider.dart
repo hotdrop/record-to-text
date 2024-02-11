@@ -39,6 +39,7 @@ class AppSettings {
   // オーディオ音源のチャネル。numChannelはデフォルト2
   final int audioChannel;
 
+  // TODO API Key
   // TODO フィラー除去のプロンプト
   // TODO 統合時のContext長
 

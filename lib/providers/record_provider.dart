@@ -45,6 +45,7 @@ class RecordNotifier extends Notifier<AudioRecorder> {
     _segmentTimer?.cancel();
     ref.read(timerProvider.notifier).stop();
     ref.read(isRecordingProvider.notifier).state = false;
+    _elapsedTime = 0;
   }
 
   Future<void> _onLoadLoopRecording(RecordConfig config) async {

@@ -9,6 +9,6 @@ class GPTRepository {
 
   Future<String> request(String text) async {
     // TODO GPT APIを実行する
-    return "こんにちわ。私はずんだもんです。よろしくお願いします！";
+    return "サマリー作りました";
   }
 }

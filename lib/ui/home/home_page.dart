@@ -116,11 +116,17 @@ class _RecordDetailLayout extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectFile = ref.watch(selectRecordFileStateProvider);
-    final textValue = (selectFile == null)
-        ? '選択した行の文字起こしテキストをここに表示します'
-        : (selectFile.speechToText == null)
-            ? 'まだ文字起こし処理中です'
-            : selectFile.speechToText!;
+
+    String textValue;
+    if (selectFile == null) {
+      textValue = '選択した行の文字起こしテキストをここに表示します';
+    } else {
+      textValue = switch (selectFile.speechToTextStatus) {
+        SpeechToTextStatus.success => selectFile.speechToText!,
+        SpeechToTextStatus.error => selectFile.speechToTextProcessErrorMessage!,
+        SpeechToTextStatus.wait => '文字起こし処理中です。しばらくお待ちください',
+      };
+    }
 
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -131,7 +137,11 @@ class _RecordDetailLayout extends ConsumerWidget {
           children: [
             Text('ファイル名: ${selectFile?.fileName() ?? ''}'),
             const Divider(),
-            SelectableText(textValue),
+            Flexible(
+              child: SingleChildScrollView(
+                child: SelectableText(textValue),
+              ),
+            ),
           ],
         ),
       ),
