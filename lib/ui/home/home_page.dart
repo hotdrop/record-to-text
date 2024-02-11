@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:realtime_talk/providers/record_provider.dart';
 import 'package:realtime_talk/providers/record_files_provider.dart';
 import 'package:realtime_talk/providers/timer_provider.dart';
+import 'package:realtime_talk/ui/home/home_controller.dart';
 import 'package:realtime_talk/ui/home/row_record_data.dart';
 
 class HomePage extends StatelessWidget {
@@ -10,17 +11,51 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: const Column(
-        children: [
-          _ViewTimer(),
-          SizedBox(height: 16),
-          _RecordButtons(),
-          SizedBox(height: 16),
-          _ViewRecordList(),
-        ],
+    return const Scaffold(
+      body: Padding(
+        padding: EdgeInsets.symmetric(vertical: 16),
+        child: Row(
+          children: [
+            Expanded(child: _RecordOperationLayout()),
+            VerticalDivider(width: 1),
+            Expanded(child: _RecordDetailLayout()),
+          ],
+        ),
       ),
+    );
+  }
+}
+
+class _RecordOperationLayout extends StatelessWidget {
+  const _RecordOperationLayout();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Column(
+      children: [
+        _ViewTimer(),
+        SizedBox(height: 16),
+        _RecordButtons(),
+        _ViewRecordList(),
+      ],
+    );
+  }
+}
+
+class _ViewTimer extends ConsumerWidget {
+  const _ViewTimer();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final timer = ref.watch(timerProvider);
+    final isRunning = ref.watch(isRecordingProvider);
+    final color = isRunning ? Colors.red : Colors.green;
+
+    return Column(
+      children: [
+        Text(isRunning ? '録音中' : '停止', style: TextStyle(color: color, fontSize: 36)),
+        Text('録音時間: $timer 秒', style: TextStyle(color: color)),
+      ],
     );
   }
 }
@@ -51,35 +86,56 @@ class _RecordButtons extends ConsumerWidget {
   }
 }
 
-class _ViewTimer extends ConsumerWidget {
-  const _ViewTimer();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final timer = ref.watch(timerProvider);
-    final isRunning = ref.watch(isRecordingProvider);
-    final color = isRunning ? Colors.red : Colors.green;
-
-    return Column(
-      children: [
-        Text(isRunning ? '録音中' : '停止', style: TextStyle(color: color, fontSize: 36)),
-        Text('録音時間: $timer 秒', style: TextStyle(color: color)),
-      ],
-    );
-  }
-}
-
 class _ViewRecordList extends ConsumerWidget {
   const _ViewRecordList();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final recordFiles = ref.watch(recordFilesProvider);
-    return Wrap(
-      runSpacing: 8,
-      spacing: 8,
-      runAlignment: WrapAlignment.start,
-      children: recordFiles.map((e) => RowRecordData(recordFile: e)).toList(),
+    return Flexible(
+      child: ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: recordFiles.length,
+        itemBuilder: (context, index) {
+          final currentFile = recordFiles[index];
+          return RowRecordData(
+            key: ValueKey(currentFile.id),
+            recordFile: currentFile,
+            onTap: () {
+              ref.read(homeControllerProvider.notifier).selectRow(currentFile);
+            },
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _RecordDetailLayout extends ConsumerWidget {
+  const _RecordDetailLayout();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final selectFile = ref.watch(selectRecordFileStateProvider);
+    final textValue = (selectFile == null)
+        ? '選択した行の文字起こしテキストをここに表示します'
+        : (selectFile.speechToText == null)
+            ? 'まだ文字起こし処理中です'
+            : selectFile.speechToText!;
+
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('ファイル名: ${selectFile?.fileName() ?? ''}'),
+            const Divider(),
+            SelectableText(textValue),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -2,36 +2,40 @@ import 'package:flutter/material.dart';
 import 'package:realtime_talk/providers/record_files_provider.dart';
 
 class RowRecordData extends StatelessWidget {
-  const RowRecordData({super.key, required this.recordFile});
+  const RowRecordData({super.key, required this.recordFile, required this.onTap});
 
   final RecordFile recordFile;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: Colors.grey),
-        borderRadius: BorderRadius.circular(4.0),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(recordFile.fileName(), overflow: TextOverflow.ellipsis),
-          const SizedBox(height: 8),
-          FittedBox(
-            child: Row(
-              children: [
-                Text('録音: ${recordFile.recordTime}秒'),
-                const SizedBox(width: 8),
-                _statusIcon(recordFile.statusSpeechToText()),
-                const SizedBox(width: 8),
-                _statusIcon(recordFile.statusSummarized()),
-              ],
-            ),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.all(8.0),
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey),
+            borderRadius: BorderRadius.circular(4.0),
           ),
-        ],
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(recordFile.fileName(), overflow: TextOverflow.ellipsis),
+              const Divider(),
+              Row(
+                children: [
+                  Text('録音: ${recordFile.recordTime}秒'),
+                  const SizedBox(width: 8),
+                  _statusIcon(recordFile.statusSpeechToText()),
+                  const SizedBox(width: 8),
+                  _statusIcon(recordFile.statusSummarized()),
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

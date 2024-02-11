@@ -5,7 +5,10 @@ final recordFilesProvider = NotifierProvider<RecordFilesNotifier, List<RecordFil
 class RecordFilesNotifier extends Notifier<List<RecordFile>> {
   @override
   build() {
-    return [];
+    return [
+      RecordFile(id: '1234', filePath: 'test/20231231234591.m4a', recordTime: 75),
+      RecordFile(id: '5678', filePath: 'test/20240102123456.m4a', recordTime: 65),
+    ];
   }
 
   void add({required String filePath, required int time}) {
