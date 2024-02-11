@@ -1,9 +1,9 @@
 import 'dart:async';
-import 'package:path/path.dart' as path;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:path_provider/path_provider.dart';
+
 import 'package:realtime_talk/common/app_logger.dart';
+import 'package:realtime_talk/providers/app_setting_provider.dart';
 import 'package:realtime_talk/providers/sound_files_provider.dart';
 import 'package:realtime_talk/providers/timer_provider.dart';
 import 'package:record/record.dart';
@@ -26,10 +26,11 @@ class RecordNotifier extends Notifier<AudioRecorder> {
   Future<void> start() async {
     try {
       if (await state.hasPermission()) {
-        const config = RecordConfig(encoder: AudioEncoder.aacLc);
+        final appSetting = ref.read(appSettingNotifierProvider);
+        final config = RecordConfig(encoder: AudioEncoder.aacLc, numChannels: appSetting.audioChannel);
         // 初回録音を実行し、以降は一定間隔で録音データを管理する
         ref.read(timerProvider.notifier).start();
-        await state.start(config, path: await _getPath());
+        await state.start(config, path: appSetting.createSoundFilePath());
         await _onLoadLoopRecording(config);
       }
     } catch (e, s) {
@@ -47,12 +48,13 @@ class RecordNotifier extends Notifier<AudioRecorder> {
   }
 
   Future<void> _onLoadLoopRecording(RecordConfig config) async {
+    final appSetting = ref.read(appSettingNotifierProvider);
     // X分ごとに音声データを保存する
-    _segmentTimer = Timer.periodic(const Duration(minutes: 5), (timer) async {
+    _segmentTimer = Timer.periodic(Duration(minutes: appSetting.divideSoundMinutes), (timer) async {
       // 現在のセグメントを保存し、音声データを生成
       await _saveCurrentSegment();
       // 新しいセグメントの録音を開始
-      await state.start(config, path: await _getPath());
+      await state.start(config, path: appSetting.createSoundFilePath());
     });
     ref.read(isRecordingProvider.notifier).state = true;
   }
@@ -67,11 +69,6 @@ class RecordNotifier extends Notifier<AudioRecorder> {
           );
       _elapsedTime = ref.read(timerProvider);
     }
-  }
-
-  Future<String> _getPath() async {
-    final dir = await getApplicationCacheDirectory();
-    return path.join(dir.path, '${DateTime.now().millisecondsSinceEpoch}.m4a');
   }
 }
 

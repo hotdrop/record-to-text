@@ -1,16 +1,18 @@
 # realtime_talk
+会議や動画をリアルタイムで録音しサマリーを作成してくれるアプリ
 
-A new Flutter project.
+# 利用技術セット
+- Flutter for MacOS
+- OpenAI Whisper API
+- OpenAI GPT API
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+# 設計
+## 録音機能
+リアルタイムで音声録音。システムのオーディオ入力をキャプチャ
+録音の連続性の確保: 録音を一時停止せずに連続して行い、バックグラウンドで定期的に音声データのセグメントを保存し、それらを非同期に処理するアプローチを検討する。例えば、録音は継続させつつ、一定間隔で音声データをバッファリングする。
+## テキスト変換機能
+Whisperを使用して文字起こしする
+文字起こしした内容からGPT3.5を使用してフィラーを除去する。responseフォーマットをjson_objectにして出力を安定させる
+## サマリー生成
+各音声データの文字列を順番に、指定したContext長になるまで統合し、その時点までをGPT4にサマリーしてもらう
+サマリーした文字列とつづきの文字列を統合して全部完了するまで繰り返す。最終的にGPT4にサマリーしてもらったものを画面出力する

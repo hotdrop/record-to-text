@@ -4,8 +4,8 @@ import 'package:realtime_talk/providers/record_provider.dart';
 import 'package:realtime_talk/providers/sound_files_provider.dart';
 import 'package:realtime_talk/providers/timer_provider.dart';
 
-class MyHomePage extends StatelessWidget {
-  const MyHomePage({super.key});
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {

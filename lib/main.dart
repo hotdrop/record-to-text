@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:realtime_talk/home_page.dart';
+import 'package:realtime_talk/providers/app_setting_provider.dart';
+import 'package:realtime_talk/ui/base_menu.dart';
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp(
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
@@ -24,7 +25,34 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(),
+      home: ref.watch(appInitFutureProvider).when(
+            data: (_) => const BaseMenu(),
+            error: (error, s) => _ViewOnLoading(errorMessage: '$error'),
+            loading: () => const _ViewOnLoading(),
+          ),
+    );
+  }
+}
+
+class _ViewOnLoading extends StatelessWidget {
+  const _ViewOnLoading({this.errorMessage});
+
+  final String? errorMessage;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Talk Recorder'),
+      ),
+      body: Center(
+        child: errorMessage == null
+            ? const CircularProgressIndicator()
+            : Text(
+                errorMessage!,
+                style: const TextStyle(color: Colors.red),
+              ),
+      ),
     );
   }
 }
