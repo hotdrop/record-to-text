@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:realtime_talk/providers/record_provider.dart';
 import 'package:realtime_talk/providers/record_files_provider.dart';
 import 'package:realtime_talk/providers/timer_provider.dart';
-import 'package:realtime_talk/ui/home/home_controller.dart';
 import 'package:realtime_talk/ui/home/row_record_data.dart';
 
 class HomePage extends StatelessWidget {
@@ -102,7 +101,7 @@ class _ViewRecordList extends ConsumerWidget {
             key: ValueKey(currentFile.id),
             recordFile: currentFile,
             onTap: () {
-              ref.read(homeControllerProvider.notifier).selectRow(currentFile);
+              ref.read(recordFilesProvider.notifier).selectRow(currentFile);
             },
           );
         },

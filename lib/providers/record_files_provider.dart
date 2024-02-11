@@ -5,10 +5,7 @@ final recordFilesProvider = NotifierProvider<RecordFilesNotifier, List<RecordFil
 class RecordFilesNotifier extends Notifier<List<RecordFile>> {
   @override
   build() {
-    return [
-      RecordFile(id: '1234', filePath: 'test/20231231234591.m4a', recordTime: 75),
-      RecordFile(id: '5678', filePath: 'test/20240102123456.m4a', recordTime: 65),
-    ];
+    return [];
   }
 
   void add({required String filePath, required int time}) {
@@ -21,6 +18,14 @@ class RecordFilesNotifier extends Notifier<List<RecordFile>> {
     final fileName = filePath.split('/').last;
     final extentionIdx = fileName.lastIndexOf('.');
     return fileName.substring(0, extentionIdx);
+  }
+
+  void selectRow(RecordFile recordFile) {
+    ref.read(selectRecordFileStateProvider.notifier).state = recordFile;
+  }
+
+  void clearSelectRow() {
+    ref.read(selectRecordFileStateProvider.notifier).state = null;
   }
 }
 
@@ -56,3 +61,6 @@ class RecordFile {
 }
 
 enum RecordProcessStatus { wait, success, error }
+
+// ホーム画面で選択したRecordFileを保持する
+final selectRecordFileStateProvider = StateProvider<RecordFile?>((ref) => null);
