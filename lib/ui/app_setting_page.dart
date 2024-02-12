@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:realtime_talk/providers/app_setting_provider.dart';
+import 'package:realtime_talk/ui/widgets/drop_down_record_interval.dart';
 
 class AppSettingPage extends StatelessWidget {
   const AppSettingPage({super.key});
@@ -17,6 +18,8 @@ class AppSettingPage extends StatelessWidget {
             _TextFieldApiKey(),
             SizedBox(height: 32),
             _TextFieldCacheDirPath(),
+            SizedBox(height: 16),
+            _DropdownRecordIntervalMinutes(),
             SizedBox(height: 16),
           ],
         ),
@@ -69,6 +72,28 @@ class _TextFieldCacheDirPath extends ConsumerWidget {
       style: const TextStyle(fontSize: 14),
       controller: TextEditingController(text: path),
       readOnly: true,
+    );
+  }
+}
+
+class _DropdownRecordIntervalMinutes extends ConsumerWidget {
+  const _DropdownRecordIntervalMinutes();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Row(
+      children: [
+        const Text('録音のデータ化間隔: '),
+        const SizedBox(width: 8),
+        DropDownRecordInterval(
+          value: ref.watch(appSettingNotifierProvider).recordIntervalMinutes,
+          onChanged: (int? selectValue) {
+            if (selectValue != null) {
+              ref.read(appSettingNotifierProvider.notifier).setRecordIntervalMinutes(selectValue);
+            }
+          },
+        ),
+      ],
     );
   }
 }

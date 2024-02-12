@@ -20,6 +20,9 @@ dependencies:
   # media
   record: ^5.0.4
 
+  # storage
+  shared_preferences: ^2.2.2
+
   # other
   path_provider: ^2.1.2
   path: ^1.8.3

@@ -49,7 +49,7 @@ class RecordNotifier extends Notifier<AudioRecorder> {
   Future<void> _onLoadLoopRecording(RecordConfig config) async {
     final appSetting = ref.read(appSettingNotifierProvider);
     // X分ごとに音声データを保存する
-    _segmentTimer = Timer.periodic(Duration(minutes: appSetting.divideSoundMinutes), (timer) async {
+    _segmentTimer = Timer.periodic(Duration(minutes: appSetting.recordIntervalMinutes), (timer) async {
       // 現在のセグメントを保存し、音声データを生成
       await _saveCurrentSegment();
       // 新しいセグメントの録音を開始

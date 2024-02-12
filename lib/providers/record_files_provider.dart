@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:realtime_talk/repository/sound_repository.dart';
+import 'package:realtime_talk/repository/gpt_repository.dart';
 
 final recordFilesProvider = NotifierProvider<RecordFilesNotifier, List<RecordFile>>(RecordFilesNotifier.new);
 
@@ -19,7 +19,7 @@ class RecordFilesNotifier extends Notifier<List<RecordFile>> {
 
   Future<void> _updateSpeechToText(RecordFile recordFile) async {
     try {
-      final text = await ref.read(soundRepositoryProvider).speechToText(recordFile.filePath);
+      final text = await ref.read(gptRepositoryProvider).speechToText(recordFile.filePath);
       final newRecordFile = recordFile.copyWith(
         speechToText: text,
         speechToTextStatus: SpeechToTextStatus.success,
