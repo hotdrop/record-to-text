@@ -1,7 +1,5 @@
 import 'dart:async';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:realtime_talk/common/app_logger.dart';
 import 'package:realtime_talk/providers/app_setting_provider.dart';
 import 'package:realtime_talk/providers/record_files_provider.dart';
@@ -27,7 +25,7 @@ class RecordNotifier extends Notifier<AudioRecorder> {
     try {
       if (await state.hasPermission()) {
         final appSetting = ref.read(appSettingNotifierProvider);
-        final config = RecordConfig(encoder: AudioEncoder.aacLc, numChannels: appSetting.audioChannel);
+        const config = RecordConfig(encoder: AudioEncoder.aacLc);
         // 初回録音を実行し、以降は一定間隔で録音データを管理する
         ref.read(timerProvider.notifier).start();
         await state.start(config, path: appSetting.createSoundFilePath());

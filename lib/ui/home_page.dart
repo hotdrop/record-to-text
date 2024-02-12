@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:realtime_talk/providers/record_provider.dart';
 import 'package:realtime_talk/providers/record_files_provider.dart';
 import 'package:realtime_talk/providers/timer_provider.dart';
-import 'package:realtime_talk/ui/home/row_record_data.dart';
+import 'package:realtime_talk/ui/widgets/row_record_data.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -135,7 +135,7 @@ class _RecordDetailLayout extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('ファイル名: ${selectFile?.fileName() ?? ''}'),
+            Text('選択ファイル名: ${selectFile?.fileName() ?? ''}'),
             const Divider(),
             Flexible(
               child: SingleChildScrollView(

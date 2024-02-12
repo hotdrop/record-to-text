@@ -42,9 +42,6 @@ class _ViewOnLoading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Talk Recorder'),
-      ),
       body: Center(
         child: errorMessage == null
             ? const CircularProgressIndicator()
