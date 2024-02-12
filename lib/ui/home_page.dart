@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:realtime_talk/providers/app_setting_provider.dart';
 import 'package:realtime_talk/providers/record_provider.dart';
 import 'package:realtime_talk/providers/record_files_provider.dart';
 import 'package:realtime_talk/providers/timer_provider.dart';
@@ -65,6 +66,14 @@ class _RecordButtons extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isRecording = ref.watch(isRecordingProvider);
+    final apiKey = ref.watch(appSettingNotifierProvider.select((value) => value.apiKey));
+
+    if (apiKey.isEmpty) {
+      return const Text(
+        'settingメニューからApiKeyを設定してください。',
+        style: TextStyle(color: Colors.red),
+      );
+    }
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,

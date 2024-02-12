@@ -31,7 +31,7 @@ class _BaseMenuState extends State<BaseMenu> {
             onDestinationSelected: (index) {
               setState(() => _selectIndex = index);
             },
-            labelType: NavigationRailLabelType.selected,
+            labelType: NavigationRailLabelType.all,
           ),
           const VerticalDivider(thickness: 1, width: 1),
           Expanded(child: _menuView(_selectIndex)),
