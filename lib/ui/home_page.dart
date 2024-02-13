@@ -19,6 +19,8 @@ class HomePage extends StatelessWidget {
             Expanded(child: _RecordOperationLayout()),
             VerticalDivider(width: 1),
             Expanded(child: _RecordDetailLayout()),
+            VerticalDivider(width: 1),
+            Expanded(child: _RecordSummaryLayout()),
           ],
         ),
       ),
@@ -145,6 +147,39 @@ class _RecordDetailLayout extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('選択ファイル名: ${selectFile?.fileName() ?? ''}'),
+            const Divider(),
+            Flexible(
+              child: SingleChildScrollView(
+                child: SelectableText(textValue),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _RecordSummaryLayout extends ConsumerWidget {
+  const _RecordSummaryLayout();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    // TODO サマリーのProviderをwatch
+    final summaryFile = null;
+
+    String textValue = '';
+    if (summaryFile == null) {
+      textValue = 'サマリーをここに表示します。';
+    }
+
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            const Text('これまでの録音情報サマリー'),
             const Divider(),
             Flexible(
               child: SingleChildScrollView(
