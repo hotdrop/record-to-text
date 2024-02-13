@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:realtime_talk/repository/gpt_repository.dart';
+import 'package:recorod_to_text/repository/gpt_repository.dart';
 
 final recordFilesProvider = NotifierProvider<RecordFilesNotifier, List<RecordFile>>(RecordFilesNotifier.new);
 

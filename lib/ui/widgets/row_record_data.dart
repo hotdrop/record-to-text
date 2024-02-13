@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:realtime_talk/providers/record_files_provider.dart';
+import 'package:recorod_to_text/providers/record_files_provider.dart';
 
 class RowRecordData extends StatelessWidget {
   const RowRecordData({super.key, required this.recordFile, required this.onTap});

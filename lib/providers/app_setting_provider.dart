@@ -2,7 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
-import 'package:realtime_talk/repository/app_setting_repository.dart';
+import 'package:recorod_to_text/repository/app_setting_repository.dart';
 
 ///
 /// このFutureProviderでアプリに必要な初期処理を行う

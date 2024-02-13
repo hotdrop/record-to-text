@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:realtime_talk/ui/app_setting_page.dart';
-import 'package:realtime_talk/ui/home_page.dart';
+import 'package:recorod_to_text/ui/app_setting_page.dart';
+import 'package:recorod_to_text/ui/home_page.dart';
 
 class BaseMenu extends StatefulWidget {
   const BaseMenu({super.key});

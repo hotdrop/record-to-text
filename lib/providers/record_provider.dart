@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:realtime_talk/common/app_logger.dart';
-import 'package:realtime_talk/providers/app_setting_provider.dart';
-import 'package:realtime_talk/providers/record_files_provider.dart';
-import 'package:realtime_talk/providers/timer_provider.dart';
 import 'package:record/record.dart';
+import 'package:recorod_to_text/common/app_logger.dart';
+import 'package:recorod_to_text/providers/app_setting_provider.dart';
+import 'package:recorod_to_text/providers/record_files_provider.dart';
+import 'package:recorod_to_text/providers/timer_provider.dart';
 
 final recordProvider = NotifierProvider<RecordNotifier, AudioRecorder>(RecordNotifier.new);
 

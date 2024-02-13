@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:realtime_talk/providers/app_setting_provider.dart';
-import 'package:realtime_talk/providers/record_provider.dart';
-import 'package:realtime_talk/providers/record_files_provider.dart';
-import 'package:realtime_talk/providers/summary_provider.dart';
-import 'package:realtime_talk/providers/timer_provider.dart';
-import 'package:realtime_talk/ui/widgets/row_record_data.dart';
+import 'package:recorod_to_text/providers/app_setting_provider.dart';
+import 'package:recorod_to_text/providers/record_provider.dart';
+import 'package:recorod_to_text/providers/record_files_provider.dart';
+import 'package:recorod_to_text/providers/summary_provider.dart';
+import 'package:recorod_to_text/providers/timer_provider.dart';
+import 'package:recorod_to_text/ui/widgets/row_record_data.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});

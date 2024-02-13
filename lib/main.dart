@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:realtime_talk/providers/app_setting_provider.dart';
-import 'package:realtime_talk/ui/base_menu.dart';
+import 'package:recorod_to_text/providers/app_setting_provider.dart';
+import 'package:recorod_to_text/ui/base_menu.dart';
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
@@ -20,7 +20,7 @@ class MyApp extends ConsumerWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: const [Locale('ja', '')],
-      title: 'TalkRecorder',
+      title: 'RecordToText',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,

@@ -1,5 +1,5 @@
-name: realtime_talk
-description: "A new Flutter project."
+name: recorod_to_text
+description: "record data to text"
 publish_to: 'none' 
 
 version: 1.0.0+1
