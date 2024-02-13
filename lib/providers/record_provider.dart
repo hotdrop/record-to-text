@@ -32,8 +32,8 @@ class RecordNotifier extends Notifier<AudioRecorder> {
         await _onLoadLoopRecording(config);
       }
     } catch (e, s) {
-      _segmentTimer?.cancel();
-      AppLogger.e('録画開始処理でエラー', error: e, s: s);
+      stop();
+      AppLogger.e('録画処理でエラー', error: e, s: s);
       rethrow;
     }
   }

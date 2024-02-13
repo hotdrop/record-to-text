@@ -75,6 +75,7 @@ class RecordFile {
   String fileName() => filePath.split('/').last;
 
   bool isSuccess() => speechToTextStatus == SpeechToTextStatus.success;
+  bool isError() => speechToTextStatus == SpeechToTextStatus.error;
 
   RecordFile copyWith({
     String? speechToText,

@@ -47,7 +47,6 @@ class AppSettings {
     this.cacheDirPath = '',
     this.audioExtension = 'm4a', // 複数プラットフォーム対応する場合は拡張子を可変にする
     this.recordIntervalMinutes = 1,
-    this.limitContextLength = 15000, // 適当
   });
 
   // OpenAI API Key
@@ -58,8 +57,6 @@ class AppSettings {
   final String audioExtension;
   // 録音の間隔（分）
   final int recordIntervalMinutes;
-  // サマリー時の最大Context長
-  final int limitContextLength;
 
   // TODO フィラー除去のプロンプト
 

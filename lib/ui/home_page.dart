@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:realtime_talk/providers/app_setting_provider.dart';
 import 'package:realtime_talk/providers/record_provider.dart';
 import 'package:realtime_talk/providers/record_files_provider.dart';
+import 'package:realtime_talk/providers/summary_provider.dart';
 import 'package:realtime_talk/providers/timer_provider.dart';
 import 'package:realtime_talk/ui/widgets/row_record_data.dart';
 
@@ -160,35 +161,46 @@ class _RecordDetailLayout extends ConsumerWidget {
   }
 }
 
-class _RecordSummaryLayout extends ConsumerWidget {
+class _RecordSummaryLayout extends StatelessWidget {
   const _RecordSummaryLayout();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    // TODO サマリーのProviderをwatch
-    final summaryFile = null;
-
-    String textValue = '';
-    if (summaryFile == null) {
-      textValue = 'サマリーをここに表示します。';
-    }
-
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Container(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            const Text('これまでの録音情報サマリー'),
-            const Divider(),
-            Flexible(
-              child: SingleChildScrollView(
-                child: SelectableText(textValue),
-              ),
-            ),
-          ],
-        ),
+  Widget build(BuildContext context) {
+    return const Padding(
+      padding: EdgeInsets.all(16.0),
+      child: Column(
+        children: [
+          Text('これまでの録音情報まとめ'),
+          Divider(),
+          Flexible(
+            child: _SummaryTextView(),
+          ),
+        ],
       ),
     );
+  }
+}
+
+class _SummaryTextView extends ConsumerWidget {
+  const _SummaryTextView();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ref.watch(summaryNotifierProvider).when(
+          data: (text) {
+            if (text.isEmpty) {
+              return const Text('録音データが追加されるたびにここにまとめテキストが作成されます。');
+            }
+            return SingleChildScrollView(
+              child: SelectableText(text),
+            );
+          },
+          error: (e, s) {
+            return SingleChildScrollView(
+              child: SelectableText('エラーが発生しました\n$e', style: const TextStyle(color: Colors.red)),
+            );
+          },
+          loading: () => const Center(child: CircularProgressIndicator()),
+        );
   }
 }

@@ -24,14 +24,14 @@ class GPTRepository {
     ''';
   }
 
-  Future<String> request({required String currentSummary, required String addText}) async {
+  Future<String> requestSummary(String text) async {
     // TODO GPT APIを実行する
+    await Future<void>.delayed(const Duration(seconds: 3));
     return '''
     これまでの録音データからサマリー作りました。\n
     サマリーはGPT4モデルのAPIを使う想定です。Context長を考慮し最初の録音データの文字起こしから順番に文字列結合してサマリーを作ります。\n
     これがうまくいくかは試してみないとわかりません。\n
-    日本語なので1文字1Contextとして計算します。そのためString文字列のlengthをそのままContext長とします。\n
-    Context長を制御するのはRepositoryではなく呼び元のProviderになります。
+    最初はContext長を制御しようと思いましたが、せいぜい30分〜1時間程度の想定なのでバグを作り込むリスクの方が高いと判断しContext長の制御はやめました\n
     ''';
   }
 }
