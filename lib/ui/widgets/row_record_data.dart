@@ -29,7 +29,7 @@ class RowRecordData extends StatelessWidget {
                 children: [
                   Text('録音:${recordFile.recordTime}秒'),
                   const SizedBox(width: 8),
-                  _statusIcon(recordFile.speechToTextStatus),
+                  _statusIcon(recordFile.status),
                 ],
               ),
             ],

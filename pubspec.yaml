@@ -20,6 +20,9 @@ dependencies:
   # media
   record: ^5.0.4
 
+  # network
+  dio: ^5.4.0
+
   # storage
   shared_preferences: ^2.2.2
 

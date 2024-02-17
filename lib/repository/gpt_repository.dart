@@ -1,4 +1,8 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:recorod_to_text/providers/app_setting_provider.dart';
+import 'package:recorod_to_text/providers/record_files_provider.dart';
+import 'package:recorod_to_text/repository/http_client.dart';
 
 final gptRepositoryProvider = Provider((ref) => GPTRepository(ref));
 
@@ -7,21 +11,24 @@ class GPTRepository {
 
   final Ref ref;
 
-  Future<String> speechToText(String filePath) async {
-    // TODO whisperAPIで文字起こしする
-    await Future<void>.delayed(const Duration(seconds: 3));
-    return '''
-    こんにちわ。私はテストHogeです。よろしくお願いします。\n
-    ここは文字起こしの結果を表示します。\n
-    \n
-    スクロール確認です。\n
-    \n
-    テキストがスクロール対応するか確認します。
-    \n\n\n\n\n
-    ここらへんまで改行すればスクロール確認できるかと思います。\n
-    Whisperがどの程度の精度かまだ不明なのでフィラーを別途削除する必要があるのか、
-    公式サイトのSpeech-to-textページの下の方にあるImproving reliabilityのようにした方がいいかは要検証となります。
-    ''';
+  Future<String> speechToText(RecordFile recordFile) async {
+    return await ref.read(httpClientProvider).postForWhisper(
+          apiKey: ref.read(appSettingNotifierProvider).apiKey,
+          multipartFile: await MultipartFile.fromFile(recordFile.filePath, filename: recordFile.fileName()),
+        );
+    // await Future<void>.delayed(const Duration(seconds: 3));
+    // return '''
+    // こんにちわ。私はテストHogeです。よろしくお願いします。\n
+    // ここは文字起こしの結果を表示します。\n
+    // \n
+    // スクロール確認です。\n
+    // \n
+    // テキストがスクロール対応するか確認します。
+    // \n\n\n\n\n
+    // ここらへんまで改行すればスクロール確認できるかと思います。\n
+    // Whisperがどの程度の精度かまだ不明なのでフィラーを別途削除する必要があるのか、
+    // 公式サイトのSpeech-to-textページの下の方にあるImproving reliabilityのようにした方がいいかは要検証となります。
+    // ''';
   }
 
   Future<String> requestSummary(String text) async {

@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path/path.dart' as path;
 import 'package:recorod_to_text/repository/gpt_repository.dart';
 
 final recordFilesProvider = NotifierProvider<RecordFilesNotifier, List<RecordFile>>(RecordFilesNotifier.new);
@@ -13,21 +14,20 @@ class RecordFilesNotifier extends Notifier<List<RecordFile>> {
     final id = _createIdFromPath(filePath);
     final newFile = RecordFile(id: id, filePath: filePath, recordTime: time);
     state = [newFile, ...state];
-    // 非同期処理で文字起こしを行う
     Future<void>.delayed(Duration.zero).then((_) => _updateSpeechToText(newFile));
   }
 
   Future<void> _updateSpeechToText(RecordFile recordFile) async {
     try {
-      final text = await ref.read(gptRepositoryProvider).speechToText(recordFile.filePath);
+      final text = await ref.read(gptRepositoryProvider).speechToText(recordFile);
       final newRecordFile = recordFile.copyWith(
         speechToText: text,
-        speechToTextStatus: SpeechToTextStatus.success,
+        status: SpeechToTextStatus.success,
       );
       _update(newRecordFile);
     } catch (e) {
       final newRecordFile = recordFile.copyWith(
-        speechToTextStatus: SpeechToTextStatus.error,
+        status: SpeechToTextStatus.error,
         errorMessage: '$e',
       );
       _update(newRecordFile);
@@ -60,8 +60,8 @@ class RecordFile {
     required this.filePath,
     required this.recordTime,
     this.speechToText,
-    this.speechToTextStatus = SpeechToTextStatus.wait,
-    this.speechToTextProcessErrorMessage,
+    this.status = SpeechToTextStatus.wait,
+    this.errorMessage,
   });
 
   final String id;
@@ -69,17 +69,18 @@ class RecordFile {
   final int recordTime;
 
   final String? speechToText;
-  final SpeechToTextStatus speechToTextStatus;
-  final String? speechToTextProcessErrorMessage;
+  final SpeechToTextStatus status;
+  final String? errorMessage;
 
-  String fileName() => filePath.split('/').last;
+  String fileName() => path.basename(filePath);
 
-  bool isSuccess() => speechToTextStatus == SpeechToTextStatus.success;
-  bool isError() => speechToTextStatus == SpeechToTextStatus.error;
+  bool isSuccess() => status == SpeechToTextStatus.success;
+  bool isError() => status == SpeechToTextStatus.error;
+  bool isWait() => status == SpeechToTextStatus.wait;
 
   RecordFile copyWith({
     String? speechToText,
-    SpeechToTextStatus? speechToTextStatus,
+    SpeechToTextStatus? status,
     String? errorMessage,
   }) {
     return RecordFile(
@@ -87,7 +88,8 @@ class RecordFile {
       filePath: filePath,
       recordTime: recordTime,
       speechToText: speechToText ?? this.speechToText,
-      speechToTextStatus: speechToTextStatus ?? this.speechToTextStatus,
+      status: status ?? this.status,
+      errorMessage: errorMessage ?? this.errorMessage,
     );
   }
 }

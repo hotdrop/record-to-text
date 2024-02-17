@@ -133,9 +133,9 @@ class _RecordDetailLayout extends ConsumerWidget {
     if (selectFile == null) {
       textValue = '選択した行の文字起こしテキストをここに表示します';
     } else {
-      textValue = switch (selectFile.speechToTextStatus) {
+      textValue = switch (selectFile.status) {
         SpeechToTextStatus.success => selectFile.speechToText!,
-        SpeechToTextStatus.error => selectFile.speechToTextProcessErrorMessage!,
+        SpeechToTextStatus.error => selectFile.errorMessage!,
         SpeechToTextStatus.wait => '文字起こし処理中です。しばらくお待ちください',
       };
     }
