@@ -5,6 +5,7 @@ import 'package:recorod_to_text/providers/record_provider.dart';
 import 'package:recorod_to_text/providers/record_files_provider.dart';
 import 'package:recorod_to_text/providers/summary_provider.dart';
 import 'package:recorod_to_text/providers/timer_provider.dart';
+import 'package:recorod_to_text/ui/widgets/record_to_text_view.dart';
 import 'package:recorod_to_text/ui/widgets/row_record_data.dart';
 
 class HomePage extends StatelessWidget {
@@ -103,6 +104,7 @@ class _ViewRecordList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final recordFiles = ref.watch(recordFilesProvider);
+    final selectFileId = ref.watch(selectRecordFileStateProvider)?.id ?? -1;
     return Flexible(
       child: ListView.builder(
         padding: const EdgeInsets.all(16),
@@ -112,6 +114,7 @@ class _ViewRecordList extends ConsumerWidget {
           return RowRecordData(
             key: ValueKey(currentFile.id),
             recordFile: currentFile,
+            isSelected: currentFile.id == selectFileId,
             onTap: () {
               ref.read(recordFilesProvider.notifier).selectRow(currentFile);
             },
@@ -129,35 +132,27 @@ class _RecordDetailLayout extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final selectFile = ref.watch(selectRecordFileStateProvider);
 
-    String textValue;
     if (selectFile == null) {
-      textValue = '選択した行の文字起こしテキストをここに表示します';
-    } else {
-      textValue = switch (selectFile.status) {
-        SpeechToTextStatus.success => selectFile.speechToText!,
-        SpeechToTextStatus.error => selectFile.errorMessage!,
-        SpeechToTextStatus.wait => '文字起こし処理中です。しばらくお待ちください',
-      };
+      return const RecordToTextView(fileName: '', message: '選択した行の文字起こしテキストをここに表示します');
     }
 
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Container(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('選択ファイル名: ${selectFile?.fileName() ?? ''}'),
-            const Divider(),
-            Flexible(
-              child: SingleChildScrollView(
-                child: SelectableText(textValue),
-              ),
-            ),
-          ],
+    return switch (selectFile.status) {
+      SpeechToTextStatus.success => RecordToTextView(
+          fileName: selectFile.fileName(),
+          message: selectFile.speechToText!,
         ),
-      ),
-    );
+      SpeechToTextStatus.error => RecordToTextView(
+          fileName: selectFile.fileName(),
+          message: selectFile.errorMessage!,
+          onErrorRetryButton: () async {
+            await ref.read(recordFilesProvider.notifier).retry(file: selectFile);
+          },
+        ),
+      SpeechToTextStatus.wait => RecordToTextView(
+          fileName: selectFile.fileName(),
+          message: '文字起こし処理中です。しばらくお待ちください',
+        ),
+    };
   }
 }
 

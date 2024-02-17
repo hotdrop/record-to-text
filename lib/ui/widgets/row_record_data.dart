@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:recorod_to_text/providers/record_files_provider.dart';
 
 class RowRecordData extends StatelessWidget {
-  const RowRecordData({super.key, required this.recordFile, required this.onTap});
+  const RowRecordData({super.key, required this.recordFile, required this.isSelected, required this.onTap});
 
   final RecordFile recordFile;
+  final bool isSelected;
   final VoidCallback onTap;
 
   @override
@@ -18,6 +19,7 @@ class RowRecordData extends StatelessWidget {
           decoration: BoxDecoration(
             border: Border.all(color: Colors.grey),
             borderRadius: BorderRadius.circular(4.0),
+            color: (isSelected) ? Colors.grey[300] : null,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

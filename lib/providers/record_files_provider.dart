@@ -17,14 +17,27 @@ class RecordFilesNotifier extends Notifier<List<RecordFile>> {
     Future<void>.delayed(Duration.zero).then((_) => _updateSpeechToText(newFile));
   }
 
-  Future<void> _updateSpeechToText(RecordFile recordFile) async {
+  Future<void> retry({required RecordFile file}) async {
+    final newFile = file.copyWith(status: SpeechToTextStatus.wait);
+    _update(newFile);
+    // リトライする場合はステータスの変更前後の選択行を更新するのでupdateSelectRowを設定する
+    await _updateSpeechToText(newFile, updateSelectRow: true);
+  }
+
+  Future<void> _updateSpeechToText(RecordFile recordFile, {bool updateSelectRow = false}) async {
     try {
+      if (updateSelectRow) {
+        ref.read(recordFilesProvider.notifier).selectRow(recordFile);
+      }
       final text = await ref.read(gptRepositoryProvider).speechToText(recordFile);
       final newRecordFile = recordFile.copyWith(
         speechToText: text,
         status: SpeechToTextStatus.success,
       );
       _update(newRecordFile);
+      if (updateSelectRow) {
+        ref.read(recordFilesProvider.notifier).selectRow(newRecordFile);
+      }
     } catch (e) {
       final newRecordFile = recordFile.copyWith(
         status: SpeechToTextStatus.error,
