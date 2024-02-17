@@ -58,8 +58,6 @@ class AppSettings {
   // 録音の間隔（分）
   final int recordIntervalMinutes;
 
-  // TODO フィラー除去のプロンプト
-
   String createSoundFilePath() {
     final dateFormat = DateFormat('yyyyMMddHHmmss');
     final fileName = '${dateFormat.format(DateTime.now())}.$audioExtension';

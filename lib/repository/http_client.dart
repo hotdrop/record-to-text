@@ -33,4 +33,27 @@ class _HttpClient {
       throw HttpException('音声変換処理でエラーが発生しました。\n ${e.response?.data}');
     }
   }
+
+  Future<String> postForGpt({required String apiKey, required String userPrompt, required String targetText}) async {
+    final dio = ref.read(_dioProvider);
+    try {
+      dio.options.headers = {
+        'Authorization': 'Bearer $apiKey',
+        'Content-Type': 'application/json',
+      };
+      final response = await dio.post(
+        'https://api.openai.com/v1/chat/completions',
+        data: {
+          'model': 'gpt-4-turbo-preview',
+          'messages': [
+            {'role': 'user', 'content': '$userPrompt: $targetText'},
+          ],
+        },
+      );
+      return response.data['choices'][0]['message']['content'].trim();
+    } on DioException catch (e) {
+      AppLogger.e('GPT APIでエラー header=${e.response?.headers} \n data=${e.response?.data}', error: e);
+      throw HttpException('サマリー処理でエラーが発生しました。\n ${e.response?.data}');
+    }
+  }
 }

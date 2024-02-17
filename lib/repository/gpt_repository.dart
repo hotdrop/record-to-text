@@ -32,13 +32,17 @@ class GPTRepository {
   }
 
   Future<String> requestSummary(String text) async {
-    // TODO GPT APIを実行する
-    await Future<void>.delayed(const Duration(seconds: 3));
-    return '''
-    これまでの録音データからサマリー作りました。\n
-    サマリーはGPT4モデルのAPIを使う想定です。Context長を考慮し最初の録音データの文字起こしから順番に文字列結合してサマリーを作ります。\n
-    これがうまくいくかは試してみないとわかりません。\n
-    最初はContext長を制御しようと思いましたが、せいぜい30分〜1時間程度の想定なのでバグを作り込むリスクの方が高いと判断しContext長の制御はやめました\n
-    ''';
+    return await ref.read(httpClientProvider).postForGpt(
+          apiKey: ref.read(appSettingNotifierProvider).apiKey,
+          userPrompt: '次の文章は複数の音声録音からの文字起こしをつなげて作成されたものです。このテキストに含まれる主要な情報を要約してください。',
+          targetText: text,
+        );
+    // await Future<void>.delayed(const Duration(seconds: 3));
+    // return '''
+    // これまでの録音データからサマリー作りました。\n
+    // 録音中の時間経過によるサマリーはgpt-4-turboモデルを使い、録音終了後に高性能なサマリーを作りたい場合はgpt-4を使ったサマリーを作成します。\n
+    // これがうまくいくかは試してみないとわかりません。\n
+    // 最初はContext長を制御しようと思いましたが、せいぜい30分〜1時間程度の想定なのでバグを作り込むリスクの方が高いと判断しContext長の制御はやめました\n
+    // ''';
   }
 }

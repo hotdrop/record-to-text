@@ -1,7 +1,5 @@
 import 'dart:async';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:recorod_to_text/common/app_logger.dart';
 import 'package:recorod_to_text/providers/record_files_provider.dart';
 import 'package:recorod_to_text/repository/gpt_repository.dart';
 
@@ -11,8 +9,9 @@ class SummaryNotifier extends AsyncNotifier<String> {
   @override
   FutureOr<String> build() async {
     final recordFiles = ref.watch(recordFilesProvider);
+
+    // 文字起こし中のデータが存在する場合はマリー実行しない
     if (recordFiles.any((r) => r.isWait())) {
-      AppLogger.d('文字起こし中のデータが存在するためサマリー実行はしません');
       return state.value ?? '';
     }
 
