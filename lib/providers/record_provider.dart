@@ -24,7 +24,7 @@ class RecordNotifier extends Notifier<AudioRecorder> {
   Future<void> start() async {
     try {
       if (await state.hasPermission()) {
-        final appSetting = ref.read(appSettingNotifierProvider);
+        final appSetting = ref.read(appSettingProvider);
         const config = RecordConfig(encoder: AudioEncoder.aacLc);
         // 初回録音を実行し、以降は一定間隔で録音データを管理する
         ref.read(timerProvider.notifier).start();
@@ -47,7 +47,7 @@ class RecordNotifier extends Notifier<AudioRecorder> {
   }
 
   Future<void> _onLoadLoopRecording(RecordConfig config) async {
-    final appSetting = ref.read(appSettingNotifierProvider);
+    final appSetting = ref.read(appSettingProvider);
     // 指定の分ごとに音声データを保存する
     _segmentTimer = Timer.periodic(Duration(minutes: appSetting.recordIntervalMinutes), (timer) async {
       // 現在のセグメントを保存し、音声データを生成

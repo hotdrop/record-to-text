@@ -3,17 +3,20 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:recorod_to_text/common/app_logger.dart';
+import 'package:recorod_to_text/providers/app_setting_provider.dart';
+import 'package:recorod_to_text/providers/record_files_provider.dart';
 
-final httpClientProvider = Provider((ref) => _HttpClient(ref));
+final openAiApiProvider = Provider((ref) => _OpenAiApi(ref));
 final _dioProvider = Provider((_) => Dio());
 
-class _HttpClient {
-  const _HttpClient(this.ref);
+class _OpenAiApi {
+  const _OpenAiApi(this.ref);
 
   final Ref ref;
 
-  Future<String> postForWhisper({required String apiKey, required MultipartFile multipartFile}) async {
+  Future<String> speechToText(RecordFile recordFile) async {
     final dio = ref.read(_dioProvider);
+    final apiKey = ref.read(appSettingProvider).apiKey;
 
     try {
       dio.options.headers = {
@@ -23,7 +26,7 @@ class _HttpClient {
       final response = await dio.post(
         'https://api.openai.com/v1/audio/transcriptions',
         data: FormData.fromMap({
-          'file': multipartFile,
+          'file': await MultipartFile.fromFile(recordFile.filePath, filename: recordFile.fileName()),
           'model': 'whisper-1',
         }),
       );
@@ -34,8 +37,10 @@ class _HttpClient {
     }
   }
 
-  Future<String> postForGpt({required String apiKey, required String userPrompt, required String targetText}) async {
+  Future<String> requestSummary(String text) async {
     final dio = ref.read(_dioProvider);
+    final apiKey = ref.read(appSettingProvider).apiKey;
+
     try {
       dio.options.headers = {
         'Authorization': 'Bearer $apiKey',
@@ -46,7 +51,7 @@ class _HttpClient {
         data: {
           'model': 'gpt-4-turbo-preview',
           'messages': [
-            {'role': 'user', 'content': '$userPrompt: $targetText'},
+            {'role': 'user', 'content': '次の文章は複数の音声録音からの文字起こしをつなげて作成されたものです。このテキストに含まれる主要な情報を要約してください: $text'},
           ],
         },
       );

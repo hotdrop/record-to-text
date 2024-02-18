@@ -41,11 +41,11 @@ class _TextFieldApiKey extends ConsumerWidget {
         counterText: '',
       ),
       style: const TextStyle(fontSize: 14),
-      initialValue: ref.watch(appSettingNotifierProvider).apiKey,
+      initialValue: ref.watch(appSettingProvider).apiKey,
       maxLength: 100,
       onChanged: (String? value) {
         if (value != null) {
-          ref.read(appSettingNotifierProvider.notifier).setApiKey(value);
+          ref.read(appSettingProvider.notifier).setApiKey(value);
         }
       },
     );
@@ -57,7 +57,7 @@ class _TextFieldCacheDirPath extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final path = ref.watch(appSettingNotifierProvider.select((value) => value.cacheDirPath));
+    final path = ref.watch(appSettingProvider.select((value) => value.cacheDirPath));
     return TextField(
       decoration: const InputDecoration(
         icon: Icon(Icons.folder_open, size: 28),
@@ -86,10 +86,10 @@ class _DropdownRecordIntervalMinutes extends ConsumerWidget {
         const Text('録音のデータ化間隔: '),
         const SizedBox(width: 8),
         DropDownRecordInterval(
-          value: ref.watch(appSettingNotifierProvider).recordIntervalMinutes,
+          value: ref.watch(appSettingProvider).recordIntervalMinutes,
           onChanged: (int? selectValue) {
             if (selectValue != null) {
-              ref.read(appSettingNotifierProvider.notifier).setRecordIntervalMinutes(selectValue);
+              ref.read(appSettingProvider.notifier).setRecordIntervalMinutes(selectValue);
             }
           },
         ),

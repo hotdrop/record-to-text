@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:recorod_to_text/providers/app_setting_provider.dart';
+import 'package:recorod_to_text/providers/app_init_provider.dart';
 import 'package:recorod_to_text/ui/base_menu.dart';
 
 void main() {

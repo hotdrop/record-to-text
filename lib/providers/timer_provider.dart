@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final timerProvider = NotifierProvider<TimerNotifier, int>(TimerNotifier.new);

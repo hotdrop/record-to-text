@@ -70,7 +70,7 @@ class _RecordButtons extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isRecording = ref.watch(isRecordingProvider);
-    final apiKey = ref.watch(appSettingNotifierProvider.select((value) => value.apiKey));
+    final apiKey = ref.watch(appSettingProvider.select((value) => value.apiKey));
 
     if (apiKey.isEmpty) {
       return const Text(
@@ -181,7 +181,7 @@ class _SummaryTextView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ref.watch(summaryNotifierProvider).when(
+    return ref.watch(summaryProvider).when(
           data: (text) {
             if (text.isEmpty) {
               return const Text('録音データが追加されるたびにここにまとめテキストが作成されます。');

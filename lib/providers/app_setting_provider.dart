@@ -1,30 +1,18 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:recorod_to_text/repository/app_setting_repository.dart';
 
-///
-/// このFutureProviderでアプリに必要な初期処理を行う
-///
-final appInitFutureProvider = FutureProvider((ref) async {
-  final minutes = await ref.read(appSettingsRepositoryProvider).getRecordIntervalMinutes();
-  final cacheDir = await getApplicationCacheDirectory();
-  await ref.read(appSettingNotifierProvider.notifier).refresh(
-        cacheDirPath: cacheDir.path,
-        recordIntervalMinutes: minutes,
-      );
-});
+final appSettingProvider = NotifierProvider<AppSettingNotifier, AppSetting>(AppSettingNotifier.new);
 
-///
-/// アプリ設定情報を管理するNotifierProvider
-///
-final appSettingNotifierProvider = NotifierProvider<AppSettingNotifer, AppSettings>(AppSettingNotifer.new);
-
-class AppSettingNotifer extends Notifier<AppSettings> {
+class AppSettingNotifier extends Notifier<AppSetting> {
   @override
-  AppSettings build() {
-    return const AppSettings();
+  AppSetting build() {
+    return const AppSetting();
+  }
+
+  Future<void> refresh({required String cacheDirPath, int? recordIntervalMinutes}) async {
+    state = state.copyWith(cacheDirPath: cacheDirPath, recordIntervalMinutes: recordIntervalMinutes);
   }
 
   void setApiKey(String value) {
@@ -35,14 +23,10 @@ class AppSettingNotifer extends Notifier<AppSettings> {
     ref.read(appSettingsRepositoryProvider).saveRecordIntervalMinutes(value);
     state = state.copyWith(recordIntervalMinutes: value);
   }
-
-  Future<void> refresh({required String cacheDirPath, int? recordIntervalMinutes}) async {
-    state = state.copyWith(cacheDirPath: cacheDirPath, recordIntervalMinutes: recordIntervalMinutes);
-  }
 }
 
-class AppSettings {
-  const AppSettings({
+class AppSetting {
+  const AppSetting({
     this.apiKey = '',
     this.cacheDirPath = '',
     this.audioExtension = 'm4a', // 複数プラットフォーム対応する場合は拡張子を可変にする
@@ -64,8 +48,8 @@ class AppSettings {
     return path.join(cacheDirPath, fileName);
   }
 
-  AppSettings copyWith({String? apiKey, String? cacheDirPath, String? audioExtension, int? recordIntervalMinutes}) {
-    return AppSettings(
+  AppSetting copyWith({String? apiKey, String? cacheDirPath, String? audioExtension, int? recordIntervalMinutes}) {
+    return AppSetting(
       apiKey: apiKey ?? this.apiKey,
       cacheDirPath: cacheDirPath ?? this.cacheDirPath,
       audioExtension: audioExtension ?? this.audioExtension,

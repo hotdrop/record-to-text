@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:recorod_to_text/repository/shared_prefs.dart';
+import 'package:recorod_to_text/repository/local/shared_prefs.dart';
 
 final appSettingsRepositoryProvider = Provider((ref) => _AppSettingRepository(ref));
 

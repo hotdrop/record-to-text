@@ -1,9 +1,10 @@
 import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:recorod_to_text/providers/record_files_provider.dart';
-import 'package:recorod_to_text/repository/gpt_repository.dart';
+import 'package:recorod_to_text/repository/record_repository.dart';
 
-final summaryNotifierProvider = AsyncNotifierProvider<SummaryNotifier, String>(SummaryNotifier.new);
+final summaryProvider = AsyncNotifierProvider<SummaryNotifier, String>(SummaryNotifier.new);
 
 class SummaryNotifier extends AsyncNotifier<String> {
   @override

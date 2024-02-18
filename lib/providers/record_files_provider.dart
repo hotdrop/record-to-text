@@ -1,12 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as path;
-import 'package:recorod_to_text/repository/gpt_repository.dart';
+import 'package:recorod_to_text/repository/record_repository.dart';
 
 final recordFilesProvider = NotifierProvider<RecordFilesNotifier, List<RecordFile>>(RecordFilesNotifier.new);
 
 class RecordFilesNotifier extends Notifier<List<RecordFile>> {
   @override
-  build() {
+  List<RecordFile> build() {
     return [];
   }
 
@@ -14,48 +14,46 @@ class RecordFilesNotifier extends Notifier<List<RecordFile>> {
     final id = _createIdFromPath(filePath);
     final newFile = RecordFile(id: id, filePath: filePath, recordTime: time);
     state = [newFile, ...state];
-    Future<void>.delayed(Duration.zero).then((_) => _updateSpeechToText(newFile));
-  }
-
-  Future<void> retry({required RecordFile file}) async {
-    final newFile = file.copyWith(status: SpeechToTextStatus.wait);
-    _update(newFile);
-    // リトライする場合はステータスの変更前後の選択行を更新するのでupdateSelectRowを設定する
-    await _updateSpeechToText(newFile, updateSelectRow: true);
-  }
-
-  Future<void> _updateSpeechToText(RecordFile recordFile, {bool updateSelectRow = false}) async {
-    try {
-      if (updateSelectRow) {
-        ref.read(recordFilesProvider.notifier).selectRow(recordFile);
-      }
-      final text = await ref.read(gptRepositoryProvider).speechToText(recordFile);
-      final newRecordFile = recordFile.copyWith(
-        speechToText: text,
-        status: SpeechToTextStatus.success,
-      );
-      _update(newRecordFile);
-      if (updateSelectRow) {
-        ref.read(recordFilesProvider.notifier).selectRow(newRecordFile);
-      }
-    } catch (e) {
-      final newRecordFile = recordFile.copyWith(
-        status: SpeechToTextStatus.error,
-        errorMessage: '$e',
-      );
-      _update(newRecordFile);
-    }
-  }
-
-  void _update(RecordFile recordFile) {
-    final idx = state.indexWhere((e) => e.id == recordFile.id);
-    state = List.of(state)..[idx] = recordFile;
+    Future<void>.delayed(Duration.zero).then((_) async {
+      final updatedFile = await _executeToText(newFile);
+      _update(updatedFile);
+    });
   }
 
   String _createIdFromPath(String filePath) {
     final fileName = filePath.split('/').last;
     final extentionIdx = fileName.lastIndexOf('.');
     return fileName.substring(0, extentionIdx);
+  }
+
+  Future<void> retry({required RecordFile file}) async {
+    final newFile = file.copyWith(status: SpeechToTextStatus.wait);
+    // リトライする場合、ステータスの変更前後の選択行を更新するので実行前後でselectRowを呼ぶ
+    _update(newFile);
+    selectRow(newFile);
+    final updatedFile = await _executeToText(newFile);
+    _update(updatedFile);
+    selectRow(updatedFile);
+  }
+
+  Future<RecordFile> _executeToText(RecordFile recordFile) async {
+    try {
+      final text = await ref.read(gptRepositoryProvider).speechToText(recordFile);
+      return recordFile.copyWith(
+        speechToText: text,
+        status: SpeechToTextStatus.success,
+      );
+    } catch (e) {
+      return recordFile.copyWith(
+        status: SpeechToTextStatus.error,
+        errorMessage: '$e',
+      );
+    }
+  }
+
+  void _update(RecordFile recordFile) {
+    final idx = state.indexWhere((e) => e.id == recordFile.id);
+    state = List.of(state)..[idx] = recordFile;
   }
 
   void selectRow(RecordFile recordFile) {
