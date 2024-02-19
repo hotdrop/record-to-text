@@ -74,7 +74,7 @@ class _RecordButtons extends ConsumerWidget {
 
     if (apiKey.isEmpty) {
       return const Text(
-        'settingメニューからApiKeyを設定してください。',
+        'Settingメニューを開きApiKeyを設定してください。',
         style: TextStyle(color: Colors.red),
       );
     }

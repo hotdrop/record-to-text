@@ -10,17 +10,21 @@ class AppSettingPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Scaffold(
       body: Padding(
-        padding: EdgeInsets.all(16),
+        padding: EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 16),
             _TextFieldApiKey(),
-            SizedBox(height: 32),
-            _TextFieldCacheDirPath(),
             SizedBox(height: 16),
             _DropdownRecordIntervalMinutes(),
+            SizedBox(height: 24),
+            Divider(),
+            SizedBox(height: 24),
+            _TextFieldCacheDirPath(),
             SizedBox(height: 16),
+            _SwitchAppTheme(),
+            SizedBox(height: 16),
+            _ButtonLicense(),
           ],
         ),
       ),
@@ -94,6 +98,58 @@ class _DropdownRecordIntervalMinutes extends ConsumerWidget {
           },
         ),
       ],
+    );
+  }
+}
+
+///
+/// アプリのテーマを変更するスイッチ
+///
+class _SwitchAppTheme extends ConsumerWidget {
+  const _SwitchAppTheme();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isDarkMode = ref.watch(appSettingProvider).isDarkMode;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        children: [
+          Icon(isDarkMode ? Icons.dark_mode : Icons.light_mode, size: 32),
+          const SizedBox(width: 16),
+          const Text('アプリのテーマ'),
+          const SizedBox(width: 16),
+          Switch(
+            value: isDarkMode,
+            onChanged: (isDark) async {
+              await ref.read(appSettingProvider.notifier).setDarkMode(isDark);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ButtonLicense extends ConsumerWidget {
+  const _ButtonLicense();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return OutlinedButton(
+      onPressed: () async {
+        final appSetting = ref.read(appSettingProvider);
+        showLicensePage(
+          context: context,
+          applicationName: appSetting.appName,
+          applicationVersion: appSetting.appVersion,
+          applicationIcon: Image.asset('assets/ic_launch.png'),
+        );
+      },
+      child: const Padding(
+        padding: EdgeInsets.all(8.0),
+        child: Text('ライセンスとアプリバージョン'),
+      ),
     );
   }
 }

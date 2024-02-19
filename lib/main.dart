@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:recorod_to_text/providers/app_init_provider.dart';
+import 'package:recorod_to_text/providers/app_setting_provider.dart';
 import 'package:recorod_to_text/ui/base_menu.dart';
 
 void main() {
@@ -13,6 +14,8 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isDarkMode = ref.watch(appSettingProvider).isDarkMode;
+
     return MaterialApp(
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
@@ -21,10 +24,7 @@ class MyApp extends ConsumerWidget {
       ],
       supportedLocales: const [Locale('ja', '')],
       title: 'RecordToText',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
+      theme: isDarkMode ? ThemeData.dark(useMaterial3: true) : ThemeData.light(useMaterial3: true),
       home: ref.watch(appInitFutureProvider).when(
             data: (_) => const BaseMenu(),
             error: (error, s) => _ViewOnLoading(errorMessage: '$error'),

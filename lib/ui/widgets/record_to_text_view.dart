@@ -16,7 +16,7 @@ class RecordToTextView extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('選択ファイル名: $fileName'),
+            const Center(child: Text('文字起こしテキスト')),
             const Divider(),
             if (onErrorRetryButton != null)
               Padding(

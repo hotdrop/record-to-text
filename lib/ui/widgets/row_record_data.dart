@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:recorod_to_text/providers/app_setting_provider.dart';
 import 'package:recorod_to_text/providers/record_files_provider.dart';
 
-class RowRecordData extends StatelessWidget {
+class RowRecordData extends ConsumerWidget {
   const RowRecordData({super.key, required this.recordFile, required this.isSelected, required this.onTap});
 
   final RecordFile recordFile;
@@ -9,7 +11,9 @@ class RowRecordData extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isDarkMode = ref.watch(appSettingProvider).isDarkMode;
+    final selectColor = isDarkMode ? Colors.grey[700] : Colors.grey[300];
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: InkWell(
@@ -19,7 +23,7 @@ class RowRecordData extends StatelessWidget {
           decoration: BoxDecoration(
             border: Border.all(color: Colors.grey),
             borderRadius: BorderRadius.circular(4.0),
-            color: (isSelected) ? Colors.grey[300] : null,
+            color: (isSelected) ? selectColor : null,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
