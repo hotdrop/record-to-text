@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:recorod_to_text/providers/app_setting_provider.dart';
 import 'package:recorod_to_text/providers/record_files_provider.dart';
 
-class RowRecordData extends ConsumerWidget {
-  const RowRecordData({super.key, required this.recordFile, required this.isSelected, required this.onTap});
+class RowRecordData extends StatelessWidget {
+  const RowRecordData({
+    super.key,
+    required this.recordFile,
+    required this.isSelected,
+    required this.selectColor,
+    required this.onTap,
+  });
 
   final RecordFile recordFile;
   final bool isSelected;
+  final Color selectColor;
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final isDarkMode = ref.watch(appSettingProvider).isDarkMode;
-    final selectColor = isDarkMode ? Colors.grey[700] : Colors.grey[300];
+  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: InkWell(

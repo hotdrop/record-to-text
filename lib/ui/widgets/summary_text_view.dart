@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class RecordToTextView extends StatelessWidget {
-  const RecordToTextView(this.text, {super.key, this.onErrorRetryButton});
+class SummayTextView extends StatelessWidget {
+  const SummayTextView(this.text, {super.key, this.onErrorRetryButton});
 
   final String text;
   final VoidCallback? onErrorRetryButton;
@@ -10,10 +10,10 @@ class RecordToTextView extends StatelessWidget {
   Widget build(BuildContext context) {
     TextStyle? textStyle = (onErrorRetryButton != null) ? const TextStyle(color: Colors.red) : null;
     return Container(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(8),
       child: Column(
         children: [
-          const Text('文字起こしテキスト', style: TextStyle(color: Colors.green)),
+          const Text('これまでの録音情報まとめ', style: TextStyle(color: Colors.green)),
           const SizedBox(height: 8),
           const Divider(),
           if (onErrorRetryButton != null)

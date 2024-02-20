@@ -11,7 +11,7 @@ class SummaryNotifier extends AsyncNotifier<String> {
   FutureOr<String> build() async {
     final recordFiles = ref.watch(recordFilesProvider);
 
-    // 文字起こし中のデータが存在する場合はマリー実行しない
+    // 文字起こし中のデータが存在する場合はサマリー実行しない
     if (recordFiles.any((r) => r.isWait())) {
       return state.value ?? '';
     }
@@ -22,5 +22,21 @@ class SummaryNotifier extends AsyncNotifier<String> {
     }
     final targetText = successRecordFiles.map((e) => e.speechToText ?? '').join('');
     return await ref.read(gptRepositoryProvider).requestSummary(targetText);
+  }
+
+  Future<void> retry() async {
+    final recordFiles = ref.read(recordFilesProvider);
+
+    // リトライの場合は成功している文字起こしデータが少なくとも1件はあるのでWait中のものがあるかだけチェックする
+    if (recordFiles.any((r) => r.isWait())) {
+      return;
+    }
+
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      final successRecordFiles = recordFiles.where((r) => r.isSuccess());
+      final targetText = successRecordFiles.map((e) => e.speechToText ?? '').join('');
+      return await ref.read(gptRepositoryProvider).requestSummary(targetText);
+    });
   }
 }

@@ -7,6 +7,7 @@ import 'package:recorod_to_text/providers/summary_provider.dart';
 import 'package:recorod_to_text/providers/timer_provider.dart';
 import 'package:recorod_to_text/ui/widgets/record_to_text_view.dart';
 import 'package:recorod_to_text/ui/widgets/row_record_data.dart';
+import 'package:recorod_to_text/ui/widgets/summary_text_view.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -22,7 +23,7 @@ class HomePage extends StatelessWidget {
             VerticalDivider(width: 1),
             Expanded(child: _RecordDetailLayout()),
             VerticalDivider(width: 1),
-            Expanded(child: _RecordSummaryLayout()),
+            Expanded(child: _SummaryTextView()),
           ],
         ),
       ),
@@ -53,7 +54,7 @@ class _ViewTimer extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final timer = ref.watch(timerProvider);
     final isRunning = ref.watch(isRecordingProvider);
-    final color = isRunning ? Colors.red : Colors.green;
+    final color = isRunning ? Colors.redAccent : Colors.green;
 
     return Column(
       children: [
@@ -85,7 +86,7 @@ class _RecordButtons extends ConsumerWidget {
         ElevatedButton.icon(
           onPressed: !isRecording ? () => ref.read(recordProvider.notifier).start() : null,
           label: const Text('録音開始'),
-          icon: const Icon(Icons.play_arrow),
+          icon: const Icon(Icons.fiber_manual_record_rounded),
         ),
         const SizedBox(width: 16),
         ElevatedButton.icon(
@@ -105,6 +106,8 @@ class _ViewRecordList extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final recordFiles = ref.watch(recordFilesProvider);
     final selectFileId = ref.watch(selectRecordFileStateProvider)?.id ?? -1;
+    final isDarkMode = ref.watch(appSettingProvider).isDarkMode;
+
     return Flexible(
       child: ListView.builder(
         padding: const EdgeInsets.all(16),
@@ -115,6 +118,7 @@ class _ViewRecordList extends ConsumerWidget {
             key: ValueKey(currentFile.id),
             recordFile: currentFile,
             isSelected: currentFile.id == selectFileId,
+            selectColor: isDarkMode ? const Color.fromARGB(255, 97, 97, 97) : const Color.fromARGB(255, 224, 224, 224),
             onTap: () {
               ref.read(recordFilesProvider.notifier).selectRow(currentFile);
             },
@@ -133,46 +137,19 @@ class _RecordDetailLayout extends ConsumerWidget {
     final selectFile = ref.watch(selectRecordFileStateProvider);
 
     if (selectFile == null) {
-      return const RecordToTextView(fileName: '', message: '選択した行の文字起こしテキストをここに表示します');
+      return const RecordToTextView('選択した行の文字起こしテキストをここに表示します');
     }
 
     return switch (selectFile.status) {
-      SpeechToTextStatus.success => RecordToTextView(
-          fileName: selectFile.fileName(),
-          message: selectFile.speechToText!,
-        ),
+      SpeechToTextStatus.success => RecordToTextView(selectFile.speechToText!),
       SpeechToTextStatus.error => RecordToTextView(
-          fileName: selectFile.fileName(),
-          message: selectFile.errorMessage!,
+          selectFile.errorMessage!,
           onErrorRetryButton: () async {
             await ref.read(recordFilesProvider.notifier).retry(file: selectFile);
           },
         ),
-      SpeechToTextStatus.wait => RecordToTextView(
-          fileName: selectFile.fileName(),
-          message: '文字起こし処理中です。しばらくお待ちください',
-        ),
+      SpeechToTextStatus.wait => const RecordToTextView('文字起こし処理中です。しばらくお待ちください'),
     };
-  }
-}
-
-class _RecordSummaryLayout extends StatelessWidget {
-  const _RecordSummaryLayout();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.all(16.0),
-      child: Column(
-        children: [
-          Text('これまでの録音情報まとめ'),
-          Divider(),
-          Flexible(
-            child: _SummaryTextView(),
-          ),
-        ],
-      ),
-    );
   }
 }
 
@@ -182,19 +159,15 @@ class _SummaryTextView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ref.watch(summaryProvider).when(
-          data: (text) {
-            if (text.isEmpty) {
-              return const Text('録音データが追加されるたびにここにまとめテキストが作成されます。');
-            }
-            return SingleChildScrollView(
-              child: SelectableText(text),
-            );
-          },
-          error: (e, s) {
-            return SingleChildScrollView(
-              child: SelectableText('エラーが発生しました\n$e', style: const TextStyle(color: Colors.red)),
-            );
-          },
+          data: (text) => SummayTextView(
+            text.isEmpty ? '録音データが追加されるたびにここにまとめテキストが作成されます。' : text,
+          ),
+          error: (e, s) => SummayTextView(
+            'エラーが発生しました\n$e',
+            onErrorRetryButton: () async {
+              await ref.read(summaryProvider.notifier).retry();
+            },
+          ),
           loading: () => const Center(child: CircularProgressIndicator()),
         );
   }
