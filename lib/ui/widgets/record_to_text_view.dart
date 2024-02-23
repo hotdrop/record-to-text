@@ -3,18 +3,20 @@ import 'package:flutter/material.dart';
 class RecordToTextView extends StatelessWidget {
   const RecordToTextView(this.text, {super.key, this.onErrorRetryButton});
 
-  final String text;
+  final String? text;
   final VoidCallback? onErrorRetryButton;
 
   @override
   Widget build(BuildContext context) {
     TextStyle? textStyle = (onErrorRetryButton != null) ? const TextStyle(color: Colors.red) : null;
+
     return Container(
       padding: const EdgeInsets.all(8.0),
       child: Column(
         children: [
-          const Text('文字起こしテキスト', style: TextStyle(color: Colors.green)),
+          const Text('文字起こしテキスト', style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
+          Text('文字数: ${text?.length ?? 0}', style: const TextStyle(color: Colors.green)),
           const Divider(),
           if (onErrorRetryButton != null)
             Padding(
@@ -27,7 +29,7 @@ class RecordToTextView extends StatelessWidget {
             ),
           Flexible(
             child: SingleChildScrollView(
-              child: SelectableText(text, style: textStyle),
+              child: SelectableText(text ?? '選択した行の文字起こしテキストをここに表示します', style: textStyle),
             ),
           ),
         ],

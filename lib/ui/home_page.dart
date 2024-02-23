@@ -137,11 +137,11 @@ class _RecordDetailLayout extends ConsumerWidget {
     final selectFile = ref.watch(selectRecordFileStateProvider);
 
     if (selectFile == null) {
-      return const RecordToTextView('選択した行の文字起こしテキストをここに表示します');
+      return const RecordToTextView(null);
     }
 
     return switch (selectFile.status) {
-      SpeechToTextStatus.success => RecordToTextView(selectFile.speechToText!),
+      SpeechToTextStatus.success => RecordToTextView(selectFile.speechToText),
       SpeechToTextStatus.error => RecordToTextView(
           selectFile.errorMessage!,
           onErrorRetryButton: () async {
@@ -159,9 +159,7 @@ class _SummaryTextView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ref.watch(summaryProvider).when(
-          data: (text) => SummayTextView(
-            text.isEmpty ? '録音データが追加されるたびにここにまとめテキストが作成されます。' : text,
-          ),
+          data: (text) => SummayTextView(text),
           error: (e, s) => SummayTextView(
             'エラーが発生しました\n$e',
             onErrorRetryButton: () async {
