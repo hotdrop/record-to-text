@@ -4,11 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:recorod_to_text/providers/record_files_provider.dart';
 import 'package:recorod_to_text/repository/record_repository.dart';
 
-final summaryProvider = AsyncNotifierProvider<SummaryNotifier, String?>(SummaryNotifier.new);
+final summaryProvider = AsyncNotifierProvider<SummaryNotifier, SummaryTextResult?>(SummaryNotifier.new);
 
-class SummaryNotifier extends AsyncNotifier<String?> {
+class SummaryNotifier extends AsyncNotifier<SummaryTextResult?> {
   @override
-  FutureOr<String?> build() async {
+  FutureOr<SummaryTextResult?> build() async {
     final recordFiles = ref.watch(recordFilesProvider);
 
     // 文字起こし中のデータが存在する場合はサマリー実行しない
@@ -39,4 +39,11 @@ class SummaryNotifier extends AsyncNotifier<String?> {
       return await ref.read(gptRepositoryProvider).requestSummary(targetText);
     });
   }
+}
+
+class SummaryTextResult {
+  const SummaryTextResult(this.text, this.executeTime);
+
+  final String text;
+  final int executeTime;
 }

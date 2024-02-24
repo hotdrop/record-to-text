@@ -154,14 +154,14 @@ class _SummaryTextView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ref.watch(summaryProvider).when(
-          data: (text) => SummayTextView(text),
-          error: (e, s) => SummayTextView(
-            'エラーが発生しました\n$e',
-            onErrorRetryButton: () async {
+          data: (data) => SummayTextView(data),
+          error: (e, s) => SummaryErrorTextView(
+            errorMessage: 'エラーが発生しました\n$e',
+            onPressed: () async {
               await ref.read(summaryProvider.notifier).retry();
             },
           ),
-          loading: () => const Center(child: CircularProgressIndicator()),
+          loading: () => const SummayLoadingView(),
         );
   }
 }

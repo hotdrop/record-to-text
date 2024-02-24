@@ -96,23 +96,6 @@ class RecordFile {
   bool isError() => status == SpeechToTextStatus.error;
   bool isWait() => status == SpeechToTextStatus.wait;
 
-  String formatSpeechToTextExecTime() {
-    if (speechToTextExecTime < 1000) {
-      return '$speechToTextExecTime ms';
-    }
-
-    // 60秒未満の場合
-    if (speechToTextExecTime <= 60000) {
-      double seconds = speechToTextExecTime / 1000;
-      return "${seconds.toStringAsFixed(3)}s"; // 小数点以下3桁まで表示
-    }
-
-    // 60秒以上の場合
-    int minutes = speechToTextExecTime ~/ 60000;
-    int seconds = (speechToTextExecTime % 60000) ~/ 1000;
-    return "${minutes}m${seconds}s";
-  }
-
   RecordFile copyWith({
     String? speechToText,
     int? speechToTextExecTime,

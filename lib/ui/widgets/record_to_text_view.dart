@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:recorod_to_text/common/int_extension.dart';
 import 'package:recorod_to_text/providers/record_files_provider.dart';
+import 'package:recorod_to_text/ui/widgets/retry_button.dart';
 
 class RecordToTextView extends StatelessWidget {
   const RecordToTextView(this.recordFile, {super.key, this.onErrorRetryButton});
@@ -17,7 +19,7 @@ class RecordToTextView extends StatelessWidget {
       return switch (record.status) {
         SpeechToTextStatus.success => Column(
             children: [
-              _Header(textLength: record.speechToText!.length, execTimeStr: record.formatSpeechToTextExecTime()),
+              _Header(textLength: record.speechToText!.length, execTimeStr: record.speechToTextExecTime.formatExecTime()),
               const Divider(),
               _TextViewArea(record.speechToText!),
             ],
@@ -26,7 +28,7 @@ class RecordToTextView extends StatelessWidget {
             children: [
               const _Header(textLength: 0),
               const Divider(),
-              _RetryButton(onPressed: onErrorRetryButton),
+              RetryButton(onPressed: onErrorRetryButton),
               _TextViewArea(record.errorMessage ?? '不明なエラーです', textColor: Colors.red),
             ],
           ),
@@ -92,24 +94,6 @@ class _Header extends StatelessWidget {
           ],
         ),
       ],
-    );
-  }
-}
-
-class _RetryButton extends StatelessWidget {
-  const _RetryButton({required this.onPressed});
-
-  final VoidCallback? onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: ElevatedButton.icon(
-        onPressed: onPressed,
-        icon: const Icon(Icons.autorenew_sharp, color: Colors.red),
-        label: const Text('リトライする', style: TextStyle(color: Colors.red)),
-      ),
     );
   }
 }
