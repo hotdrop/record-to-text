@@ -17,6 +17,10 @@ class RecordFilesNotifier extends Notifier<List<RecordFile>> {
     Future<void>.delayed(Duration.zero).then((_) async {
       final updatedFile = await _executeToText(newFile);
       _update(updatedFile);
+      final selectedFile = ref.read(selectRecordFileStateProvider);
+      if (selectedFile != null) {
+        selectRow(updatedFile);
+      }
     });
   }
 
@@ -38,9 +42,10 @@ class RecordFilesNotifier extends Notifier<List<RecordFile>> {
 
   Future<RecordFile> _executeToText(RecordFile recordFile) async {
     try {
-      final text = await ref.read(gptRepositoryProvider).speechToText(recordFile);
+      final result = await ref.read(gptRepositoryProvider).speechToText(recordFile);
       return recordFile.copyWith(
-        speechToText: text,
+        speechToText: result.text,
+        speechToTextExecTime: result.executeTime,
         status: SpeechToTextStatus.success,
       );
     } catch (e) {
@@ -71,6 +76,7 @@ class RecordFile {
     required this.filePath,
     required this.recordTime,
     this.speechToText,
+    this.speechToTextExecTime = 0,
     this.status = SpeechToTextStatus.wait,
     this.errorMessage,
   });
@@ -78,6 +84,7 @@ class RecordFile {
   final String id;
   final String filePath;
   final int recordTime;
+  final int speechToTextExecTime;
 
   final String? speechToText;
   final SpeechToTextStatus status;
@@ -89,8 +96,26 @@ class RecordFile {
   bool isError() => status == SpeechToTextStatus.error;
   bool isWait() => status == SpeechToTextStatus.wait;
 
+  String formatSpeechToTextExecTime() {
+    if (speechToTextExecTime < 1000) {
+      return '$speechToTextExecTime ms';
+    }
+
+    // 60秒未満の場合
+    if (speechToTextExecTime <= 60000) {
+      double seconds = speechToTextExecTime / 1000;
+      return "${seconds.toStringAsFixed(3)}s"; // 小数点以下3桁まで表示
+    }
+
+    // 60秒以上の場合
+    int minutes = speechToTextExecTime ~/ 60000;
+    int seconds = (speechToTextExecTime % 60000) ~/ 1000;
+    return "${minutes}m${seconds}s";
+  }
+
   RecordFile copyWith({
     String? speechToText,
+    int? speechToTextExecTime,
     SpeechToTextStatus? status,
     String? errorMessage,
   }) {
@@ -98,6 +123,7 @@ class RecordFile {
       id: id,
       filePath: filePath,
       recordTime: recordTime,
+      speechToTextExecTime: speechToTextExecTime ?? this.speechToTextExecTime,
       speechToText: speechToText ?? this.speechToText,
       status: status ?? this.status,
       errorMessage: errorMessage ?? this.errorMessage,
@@ -109,3 +135,10 @@ enum SpeechToTextStatus { wait, success, error }
 
 // ホーム画面で選択したRecordFileを保持する
 final selectRecordFileStateProvider = StateProvider<RecordFile?>((ref) => null);
+
+class SpeechToTextResult {
+  const SpeechToTextResult(this.text, this.executeTime);
+
+  final String text;
+  final int executeTime;
+}

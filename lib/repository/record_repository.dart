@@ -2,7 +2,6 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:recorod_to_text/providers/app_setting_provider.dart';
 import 'package:recorod_to_text/providers/record_files_provider.dart';
 import 'package:recorod_to_text/repository/remote/open_ai_api.dart';
 
@@ -13,11 +12,14 @@ class GPTRepository {
 
   final Ref ref;
 
-  Future<String> speechToText(RecordFile recordFile) async {
+  Future<SpeechToTextResult> speechToText(RecordFile recordFile) async {
+    final stopWatch = Stopwatch()..start();
     // return await ref.read(openAiApiProvider).speechToText(recordFile);
     await Future<void>.delayed(const Duration(seconds: 3));
+    stopWatch.stop();
+
     if (Random().nextBool()) {
-      return '''
+      const text = '''
     こんにちわ。私はテストHogeです。よろしくお願いします。\n
     ここは文字起こしの結果を表示します。\n
     \n
@@ -29,6 +31,7 @@ class GPTRepository {
     Whisperがどの程度の精度かまだ不明なのでフィラーを別途削除する必要があるのか、
     公式サイトのSpeech-to-textページの下の方にあるImproving reliabilityのようにした方がいいかは要検証となります。
     ''';
+      return SpeechToTextResult(text, stopWatch.elapsedMilliseconds);
     } else {
       throw const HttpException('エラーが発生しました。これはダミーの処理です再実行しましょう。');
     }

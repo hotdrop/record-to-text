@@ -136,20 +136,15 @@ class _RecordDetailLayout extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final selectFile = ref.watch(selectRecordFileStateProvider);
 
-    if (selectFile == null) {
-      return const RecordToTextView(null);
-    }
-
-    return switch (selectFile.status) {
-      SpeechToTextStatus.success => RecordToTextView(selectFile.speechToText),
-      SpeechToTextStatus.error => RecordToTextView(
-          selectFile.errorMessage!,
-          onErrorRetryButton: () async {
-            await ref.read(recordFilesProvider.notifier).retry(file: selectFile);
-          },
-        ),
-      SpeechToTextStatus.wait => const RecordToTextView('文字起こし処理中です。しばらくお待ちください'),
-    };
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: RecordToTextView(
+        selectFile,
+        onErrorRetryButton: () async {
+          await ref.read(recordFilesProvider.notifier).retry(file: selectFile!);
+        },
+      ),
+    );
   }
 }
 
