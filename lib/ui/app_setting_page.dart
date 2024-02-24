@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:record/record.dart';
 import 'package:recorod_to_text/providers/app_setting_provider.dart';
+import 'package:recorod_to_text/providers/record_provider.dart';
+import 'package:recorod_to_text/ui/widgets/drop_down_device.dart';
 import 'package:recorod_to_text/ui/widgets/drop_down_record_interval.dart';
 
 class AppSettingPage extends StatelessWidget {
@@ -18,6 +21,8 @@ class AppSettingPage extends StatelessWidget {
             SizedBox(height: 16),
             _DropdownRecordIntervalMinutes(),
             SizedBox(height: 24),
+            _DropdownSoundDevices(),
+            SizedBox(height: 16),
             Divider(),
             SizedBox(height: 24),
             _TextFieldCacheDirPath(),
@@ -98,6 +103,42 @@ class _DropdownRecordIntervalMinutes extends ConsumerWidget {
           },
         ),
       ],
+    );
+  }
+}
+
+class _DropdownSoundDevices extends ConsumerWidget {
+  const _DropdownSoundDevices();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ref.watch(recordDevicesProvider).when(
+      data: (data) {
+        return Row(
+          children: [
+            const Text('録音デバイス: '),
+            const SizedBox(width: 8),
+            DropDownDevice(
+              selectDevice: ref.watch(appSettingProvider).inputDevice,
+              devices: data,
+              onChanged: (InputDevice? device) {
+                if (device != null) {
+                  ref.read(appSettingProvider.notifier).setRecordDevice(device);
+                }
+              },
+            ),
+          ],
+        );
+      },
+      error: (e, s) {
+        return Text(
+          '録音デバイスの取得でエラーが発生しました。アプリを再起動してください。$e',
+          style: const TextStyle(color: Colors.red),
+        );
+      },
+      loading: () {
+        return const Text('録音デバイスを取得中です..');
+      },
     );
   }
 }

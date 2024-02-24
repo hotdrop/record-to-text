@@ -25,7 +25,7 @@ class RecordNotifier extends Notifier<AudioRecorder> {
     try {
       if (await state.hasPermission()) {
         final appSetting = ref.read(appSettingProvider);
-        const config = RecordConfig(encoder: AudioEncoder.aacLc);
+        final config = RecordConfig(encoder: AudioEncoder.aacLc, device: appSetting.inputDevice);
         // 初回録音を実行し、以降は一定間隔で録音データを管理する
         ref.read(timerProvider.notifier).start();
         await state.start(config, path: appSetting.createSoundFilePath());
@@ -68,6 +68,15 @@ class RecordNotifier extends Notifier<AudioRecorder> {
       _elapsedTime = ref.read(timerProvider);
     }
   }
+
+  Future<List<String>> devices() async {
+    final record = await state.listInputDevices();
+    return record.map((e) => e.label).toList();
+  }
 }
+
+final recordDevicesProvider = FutureProvider<List<InputDevice>>((ref) async {
+  return await ref.watch(recordProvider).listInputDevices();
+});
 
 final isRecordingProvider = StateProvider<bool>((ref) => false);

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
+import 'package:record/record.dart';
 import 'package:recorod_to_text/repository/app_setting_repository.dart';
 
 final appSettingProvider = NotifierProvider<AppSettingNotifier, AppSetting>(AppSettingNotifier.new);
@@ -37,6 +38,10 @@ class AppSettingNotifier extends Notifier<AppSetting> {
     state = state.copyWith(recordIntervalMinutes: value);
   }
 
+  void setRecordDevice(InputDevice device) {
+    state = state.copyWith(inputDevice: device);
+  }
+
   Future<void> setDarkMode(bool isDarkMode) async {
     await ref.read(appSettingsRepositoryProvider).changeThemeMode(isDarkMode);
     final mode = isDarkMode ? ThemeMode.dark : ThemeMode.light;
@@ -50,6 +55,7 @@ class AppSetting {
     this.cacheDirPath = '',
     this.audioExtension = 'm4a', // 複数プラットフォーム対応する場合は拡張子を可変にする
     this.recordIntervalMinutes = 1,
+    this.inputDevice,
     this.appName = '',
     this.appVersion = '',
     this.themeMode = ThemeMode.system,
@@ -63,6 +69,8 @@ class AppSetting {
   final String audioExtension;
   // 録音の間隔（分）
   final int recordIntervalMinutes;
+  // 録音対象のデバイス
+  final InputDevice? inputDevice;
   // アプリ名
   final String appName;
   // アプリバージョン
@@ -83,6 +91,7 @@ class AppSetting {
     String? cacheDirPath,
     String? audioExtension,
     int? recordIntervalMinutes,
+    InputDevice? inputDevice,
     String? appName,
     String? appVersion,
     ThemeMode? themeMode,
@@ -92,6 +101,7 @@ class AppSetting {
       cacheDirPath: cacheDirPath ?? this.cacheDirPath,
       audioExtension: audioExtension ?? this.audioExtension,
       recordIntervalMinutes: recordIntervalMinutes ?? this.recordIntervalMinutes,
+      inputDevice: inputDevice ?? this.inputDevice,
       appName: appName ?? this.appName,
       appVersion: appVersion ?? this.appVersion,
       themeMode: themeMode ?? this.themeMode,
