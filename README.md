@@ -1,4 +1,8 @@
-# RecorodToText
+![アプリアイコン](assets/ic_launch.png)  
+![Flutter](https://img.shields.io/badge/Flutter-02569B?logo=flutter&style=flat&logoColor=white)
+![Dart](https://img.shields.io/badge/Dart-0175C2?logo=dart&style=flat&logoColor=white)
+
+# RecordToText
 このアプリは**オーディオインタフェースから入力された音声**を録音し、一定期間毎に自動で文字起こしとサマリーを作成します。  
 文字起こしの間隔は設定画面でカスタマイズできます。  
 今の所、相手の声は拾えませんので例えばビデオ通話や音声通話を録音して文字起こしすることはできません。（制限事項の2参照）
