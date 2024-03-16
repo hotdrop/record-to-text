@@ -13,15 +13,24 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   
-  flutter_riverpod: ^2.4.10
+  # design
+  flutter_riverpod: ^2.5.1
+
+  # record
   record: ^5.0.4
-  dio: ^5.4.0
+
+  # network  
+  dio: ^5.4.1
+
+  # localstorage
   shared_preferences: ^2.2.2
+
+  # other
   path_provider: ^2.1.2
-  path: ^1.8.3
+  path: ^1.9.0
   intl: ^0.18.1
   package_info_plus: ^5.0.1
-  logger: ^2.0.2
+  logger: ^2.1.0
 
 dev_dependencies:
   flutter_test:

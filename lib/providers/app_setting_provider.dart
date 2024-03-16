@@ -16,6 +16,7 @@ class AppSettingNotifier extends Notifier<AppSetting> {
   Future<void> refresh({
     required String cacheDirPath,
     int? recordIntervalMinutes,
+    String? summaryPrompt,
     required String appName,
     required String appVersion,
     required ThemeMode themeMode,
@@ -23,6 +24,7 @@ class AppSettingNotifier extends Notifier<AppSetting> {
     state = state.copyWith(
       cacheDirPath: cacheDirPath,
       recordIntervalMinutes: recordIntervalMinutes,
+      summaryPrompt: summaryPrompt,
       appName: appName,
       appVersion: appVersion,
       themeMode: themeMode,
@@ -42,6 +44,11 @@ class AppSettingNotifier extends Notifier<AppSetting> {
     state = state.copyWith(inputDevice: device);
   }
 
+  void setSummaryPrompt(String value) {
+    ref.read(appSettingsRepositoryProvider).saveSummaryPrompt(value);
+    state = state.copyWith(summaryPrompt: value);
+  }
+
   Future<void> setDarkMode(bool isDarkMode) async {
     await ref.read(appSettingsRepositoryProvider).changeThemeMode(isDarkMode);
     final mode = isDarkMode ? ThemeMode.dark : ThemeMode.light;
@@ -56,6 +63,7 @@ class AppSetting {
     this.audioExtension = 'm4a', // 複数プラットフォーム対応する場合は拡張子を可変にする
     this.recordIntervalMinutes = 1,
     this.inputDevice,
+    this.summaryPrompt = defaultSummaryPrompt,
     this.appName = '',
     this.appVersion = '',
     this.themeMode = ThemeMode.system,
@@ -71,12 +79,16 @@ class AppSetting {
   final int recordIntervalMinutes;
   // 録音対象のデバイス
   final InputDevice? inputDevice;
+  // サマリーのプロンプト
+  final String summaryPrompt;
   // アプリ名
   final String appName;
   // アプリバージョン
   final String appVersion;
   // テーマモード
   final ThemeMode themeMode;
+
+  static const String defaultSummaryPrompt = '次の文章は複数の音声録音からの文字起こしをつなげて作成されたものです。このテキストに含まれる主要な情報を要約してください:';
 
   String createSoundFilePath() {
     final dateFormat = DateFormat('yyyyMMddHHmmss');
@@ -92,6 +104,7 @@ class AppSetting {
     String? audioExtension,
     int? recordIntervalMinutes,
     InputDevice? inputDevice,
+    String? summaryPrompt,
     String? appName,
     String? appVersion,
     ThemeMode? themeMode,
@@ -102,6 +115,7 @@ class AppSetting {
       audioExtension: audioExtension ?? this.audioExtension,
       recordIntervalMinutes: recordIntervalMinutes ?? this.recordIntervalMinutes,
       inputDevice: inputDevice ?? this.inputDevice,
+      summaryPrompt: summaryPrompt ?? this.summaryPrompt,
       appName: appName ?? this.appName,
       appVersion: appVersion ?? this.appVersion,
       themeMode: themeMode ?? this.themeMode,

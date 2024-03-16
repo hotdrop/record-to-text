@@ -39,11 +39,11 @@ class _OpenAiApi {
 
   Future<String> requestSummary(String text) async {
     final dio = ref.read(_dioProvider);
-    final apiKey = ref.read(appSettingProvider).apiKey;
+    final appSetting = ref.read(appSettingProvider);
 
     try {
       dio.options.headers = {
-        'Authorization': 'Bearer $apiKey',
+        'Authorization': 'Bearer ${appSetting.apiKey}',
         'Content-Type': 'application/json',
       };
       final response = await dio.post(
@@ -51,7 +51,7 @@ class _OpenAiApi {
         data: {
           'model': 'gpt-4-turbo-preview',
           'messages': [
-            {'role': 'user', 'content': '次の文章は複数の音声録音からの文字起こしをつなげて作成されたものです。このテキストに含まれる主要な情報を要約してください: $text'},
+            {'role': 'user', 'content': '${appSetting.summaryPrompt} $text'},
           ],
         },
       );

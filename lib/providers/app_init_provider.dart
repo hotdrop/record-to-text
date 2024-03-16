@@ -10,6 +10,7 @@ import 'package:recorod_to_text/repository/app_setting_repository.dart';
 ///
 final appInitFutureProvider = FutureProvider((ref) async {
   final minutes = await ref.read(appSettingsRepositoryProvider).getRecordIntervalMinutes();
+  final summaryPrompt = await ref.read(appSettingsRepositoryProvider).getSummaryPrompt();
   final cacheDir = await getApplicationCacheDirectory();
   final packageInfo = await PackageInfo.fromPlatform();
   final isDarkMode = await ref.read(appSettingsRepositoryProvider).isDarkMode();
@@ -17,6 +18,7 @@ final appInitFutureProvider = FutureProvider((ref) async {
   await ref.read(appSettingProvider.notifier).refresh(
         cacheDirPath: cacheDir.path,
         recordIntervalMinutes: minutes,
+        summaryPrompt: summaryPrompt,
         appName: packageInfo.appName,
         appVersion: packageInfo.version,
         themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,

@@ -14,23 +14,27 @@ class AppSettingPage extends StatelessWidget {
     return const Scaffold(
       body: Padding(
         padding: EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _TextFieldApiKey(),
-            SizedBox(height: 16),
-            _DropdownRecordIntervalMinutes(),
-            SizedBox(height: 24),
-            _DropdownSoundDevices(),
-            SizedBox(height: 16),
-            Divider(),
-            SizedBox(height: 24),
-            _TextFieldCacheDirPath(),
-            SizedBox(height: 16),
-            _SwitchAppTheme(),
-            SizedBox(height: 16),
-            _ButtonLicense(),
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _TextFieldApiKey(),
+              SizedBox(height: 16),
+              _DropdownRecordIntervalMinutes(),
+              SizedBox(height: 24),
+              _DropdownSoundDevices(),
+              SizedBox(height: 24),
+              _TextFieldSummaryPrompt(),
+              SizedBox(height: 16),
+              Divider(),
+              SizedBox(height: 24),
+              _TextFieldCacheDirPath(),
+              SizedBox(height: 16),
+              _SwitchAppTheme(),
+              SizedBox(height: 16),
+              _ButtonLicense(),
+            ],
+          ),
         ),
       ),
     );
@@ -138,6 +142,30 @@ class _DropdownSoundDevices extends ConsumerWidget {
       },
       loading: () {
         return const Text('録音デバイスを取得中です..');
+      },
+    );
+  }
+}
+
+class _TextFieldSummaryPrompt extends ConsumerWidget {
+  const _TextFieldSummaryPrompt();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return TextFormField(
+      decoration: const InputDecoration(
+        icon: Icon(Icons.text_fields, size: 28),
+        border: OutlineInputBorder(),
+        label: Text('サマリー作成時のプロンプト'),
+      ),
+      style: const TextStyle(fontSize: 14),
+      initialValue: ref.watch(appSettingProvider).summaryPrompt,
+      maxLength: 1000,
+      maxLines: 5,
+      onChanged: (String? value) {
+        if (value != null) {
+          ref.read(appSettingProvider.notifier).setSummaryPrompt(value);
+        }
       },
     );
   }

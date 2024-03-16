@@ -23,4 +23,12 @@ class _AppSettingRepository {
   Future<void> changeThemeMode(bool isDarkMode) async {
     await _ref.read(sharedPrefsProvider).saveDarkMode(isDarkMode);
   }
+
+  Future<String?> getSummaryPrompt() async {
+    return await _ref.read(sharedPrefsProvider).getSummaryPrompt();
+  }
+
+  Future<void> saveSummaryPrompt(String value) async {
+    await _ref.read(sharedPrefsProvider).setSummaryPrompt(value);
+  }
 }
