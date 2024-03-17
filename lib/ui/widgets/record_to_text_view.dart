@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:recorod_to_text/common/int_extension.dart';
-import 'package:recorod_to_text/providers/record_files_provider.dart';
+import 'package:recorod_to_text/models/record_file.dart';
 import 'package:recorod_to_text/ui/widgets/retry_button.dart';
 
 class RecordToTextView extends StatelessWidget {
@@ -17,14 +17,14 @@ class RecordToTextView extends StatelessWidget {
       return const _EmptyTextView();
     } else {
       return switch (record.status) {
-        SpeechToTextStatus.success => Column(
+        RecordToTextStatus.success => Column(
             children: [
               _Header(textLength: record.speechToText!.length, execTimeStr: record.speechToTextExecTime.formatExecTime()),
               const Divider(),
               _TextViewArea(record.speechToText!),
             ],
           ),
-        SpeechToTextStatus.error => Column(
+        RecordToTextStatus.error => Column(
             children: [
               const _Header(textLength: 0),
               const Divider(),
@@ -32,7 +32,7 @@ class RecordToTextView extends StatelessWidget {
               _TextViewArea(record.errorMessage ?? '不明なエラーです', textColor: Colors.red),
             ],
           ),
-        SpeechToTextStatus.wait => const _LoadingTextView(),
+        RecordToTextStatus.wait => const _LoadingTextView(),
       };
     }
   }

@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:recorod_to_text/models/summary_text_result.dart';
+import 'package:recorod_to_text/providers/history_provider.dart';
 import 'package:recorod_to_text/providers/record_files_provider.dart';
 import 'package:recorod_to_text/repository/record_repository.dart';
 
@@ -13,6 +15,12 @@ class SummaryNotifier extends AsyncNotifier<SummaryTextResult?> {
 
     // 文字起こし中のデータが存在する場合はサマリー実行しない
     if (recordFiles.any((r) => r.isWait())) {
+      return state.value;
+    }
+
+    // 履歴選択時のロード中状態でもサマリーしない
+    final isHistoryLoading = ref.read(historyNowLoadingProvider);
+    if (isHistoryLoading) {
       return state.value;
     }
 
@@ -39,11 +47,11 @@ class SummaryNotifier extends AsyncNotifier<SummaryTextResult?> {
       return await ref.read(gptRepositoryProvider).requestSummary(targetText);
     });
   }
-}
 
-class SummaryTextResult {
-  const SummaryTextResult(this.text, this.executeTime);
-
-  final String text;
-  final int executeTime;
+  Future<void> setHistory(SummaryTextResult? result) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      return (result != null) ? result : const SummaryTextResult('サマリーがありません。録音を開始してすぐ停止すればサマリーが再作成されます。', 0);
+    });
+  }
 }

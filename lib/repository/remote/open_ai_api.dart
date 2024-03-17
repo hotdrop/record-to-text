@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:recorod_to_text/common/app_logger.dart';
+import 'package:recorod_to_text/models/record_file.dart';
 import 'package:recorod_to_text/providers/app_setting_provider.dart';
-import 'package:recorod_to_text/providers/record_files_provider.dart';
 
 final openAiApiProvider = Provider((ref) => _OpenAiApi(ref));
 final _dioProvider = Provider((_) => Dio());

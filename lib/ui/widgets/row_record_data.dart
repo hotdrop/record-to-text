@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:recorod_to_text/providers/record_files_provider.dart';
+import 'package:recorod_to_text/models/record_file.dart';
 
 class RowRecordData extends StatelessWidget {
   const RowRecordData({
@@ -48,11 +48,11 @@ class RowRecordData extends StatelessWidget {
     );
   }
 
-  Widget _statusIcon(SpeechToTextStatus status) {
+  Widget _statusIcon(RecordToTextStatus status) {
     return switch (status) {
-      SpeechToTextStatus.success => const Icon(Icons.check_circle, color: Colors.green),
-      SpeechToTextStatus.error => const Icon(Icons.error, color: Colors.red),
-      SpeechToTextStatus.wait => const Icon(Icons.hourglass_empty, color: Colors.amber),
+      RecordToTextStatus.success => const Icon(Icons.check_circle, color: Colors.green),
+      RecordToTextStatus.error => const Icon(Icons.error, color: Colors.red),
+      RecordToTextStatus.wait => const Icon(Icons.hourglass_empty, color: Colors.amber),
     };
   }
 }

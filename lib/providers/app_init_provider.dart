@@ -3,12 +3,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:recorod_to_text/providers/app_setting_provider.dart';
+import 'package:recorod_to_text/providers/history_provider.dart';
 import 'package:recorod_to_text/repository/app_setting_repository.dart';
 
 ///
 /// ここでアプリに必要な初期処理を行う
 ///
 final appInitFutureProvider = FutureProvider((ref) async {
+  // 履歴データロード
+  await ref.read(historiesProvider.notifier).onLoad();
+
+  // 設定系の値を取得
   final minutes = await ref.read(appSettingsRepositoryProvider).getRecordIntervalMinutes();
   final summaryPrompt = await ref.read(appSettingsRepositoryProvider).getSummaryPrompt();
   final cacheDir = await getApplicationCacheDirectory();

@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:path/path.dart' as path;
+import 'package:recorod_to_text/models/record_file.dart';
 import 'package:recorod_to_text/repository/record_repository.dart';
 
 final recordFilesProvider = NotifierProvider<RecordFilesNotifier, List<RecordFile>>(RecordFilesNotifier.new);
@@ -31,7 +31,7 @@ class RecordFilesNotifier extends Notifier<List<RecordFile>> {
   }
 
   Future<void> retry({required RecordFile file}) async {
-    final newFile = file.copyWith(status: SpeechToTextStatus.wait);
+    final newFile = file.copyWith(status: RecordToTextStatus.wait);
     // リトライする場合、ステータスの変更前後の選択行を更新するので実行前後でselectRowを呼ぶ
     _update(newFile);
     selectRow(newFile);
@@ -46,11 +46,11 @@ class RecordFilesNotifier extends Notifier<List<RecordFile>> {
       return recordFile.copyWith(
         speechToText: result.text,
         speechToTextExecTime: result.executeTime,
-        status: SpeechToTextStatus.success,
+        status: RecordToTextStatus.success,
       );
     } catch (e) {
       return recordFile.copyWith(
-        status: SpeechToTextStatus.error,
+        status: RecordToTextStatus.error,
         errorMessage: '$e',
       );
     }
@@ -68,60 +68,11 @@ class RecordFilesNotifier extends Notifier<List<RecordFile>> {
   void clearSelectRow() {
     ref.read(selectRecordFileStateProvider.notifier).state = null;
   }
-}
 
-class RecordFile {
-  const RecordFile({
-    required this.id,
-    required this.filePath,
-    required this.recordTime,
-    this.speechToText,
-    this.speechToTextExecTime = 0,
-    this.status = SpeechToTextStatus.wait,
-    this.errorMessage,
-  });
-
-  final String id;
-  final String filePath;
-  final int recordTime;
-  final int speechToTextExecTime;
-
-  final String? speechToText;
-  final SpeechToTextStatus status;
-  final String? errorMessage;
-
-  String fileName() => path.basename(filePath);
-
-  bool isSuccess() => status == SpeechToTextStatus.success;
-  bool isError() => status == SpeechToTextStatus.error;
-  bool isWait() => status == SpeechToTextStatus.wait;
-
-  RecordFile copyWith({
-    String? speechToText,
-    int? speechToTextExecTime,
-    SpeechToTextStatus? status,
-    String? errorMessage,
-  }) {
-    return RecordFile(
-      id: id,
-      filePath: filePath,
-      recordTime: recordTime,
-      speechToTextExecTime: speechToTextExecTime ?? this.speechToTextExecTime,
-      speechToText: speechToText ?? this.speechToText,
-      status: status ?? this.status,
-      errorMessage: errorMessage ?? this.errorMessage,
-    );
+  void setHistory(List<RecordFile> recordFiles) {
+    state = [...recordFiles];
   }
 }
 
-enum SpeechToTextStatus { wait, success, error }
-
 // ホーム画面で選択したRecordFileを保持する
 final selectRecordFileStateProvider = StateProvider<RecordFile?>((ref) => null);
-
-class SpeechToTextResult {
-  const SpeechToTextResult(this.text, this.executeTime);
-
-  final String text;
-  final int executeTime;
-}

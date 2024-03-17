@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:recorod_to_text/common/int_extension.dart';
-import 'package:recorod_to_text/providers/summary_provider.dart';
+import 'package:recorod_to_text/models/summary_text_result.dart';
 import 'package:recorod_to_text/ui/widgets/retry_button.dart';
 
 class SummayTextView extends StatelessWidget {
