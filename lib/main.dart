@@ -3,7 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:recorod_to_text/providers/app_init_provider.dart';
 import 'package:recorod_to_text/providers/app_setting_provider.dart';
-import 'package:recorod_to_text/ui/base_menu.dart';
+import 'package:recorod_to_text/ui/base_page.dart';
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
@@ -26,7 +26,7 @@ class MyApp extends ConsumerWidget {
       title: 'RecordToText',
       theme: isDarkMode ? ThemeData.dark(useMaterial3: true) : ThemeData.light(useMaterial3: true),
       home: ref.watch(appInitFutureProvider).when(
-            data: (_) => const BaseMenu(),
+            data: (_) => const BasePage(),
             error: (error, s) => _ViewOnLoading(errorMessage: '$error'),
             loading: () => const _ViewOnLoading(),
           ),

@@ -6,8 +6,8 @@ import 'package:recorod_to_text/providers/record_provider.dart';
 import 'package:recorod_to_text/ui/widgets/drop_down_device.dart';
 import 'package:recorod_to_text/ui/widgets/drop_down_record_interval.dart';
 
-class AppSettingPage extends StatelessWidget {
-  const AppSettingPage({super.key});
+class AppSettingContents extends StatelessWidget {
+  const AppSettingContents({super.key});
 
   @override
   Widget build(BuildContext context) {

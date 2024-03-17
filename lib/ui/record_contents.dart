@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:recorod_to_text/providers/app_setting_provider.dart';
-import 'package:recorod_to_text/providers/record_provider.dart';
 import 'package:recorod_to_text/providers/record_files_provider.dart';
+import 'package:recorod_to_text/providers/record_provider.dart';
 import 'package:recorod_to_text/providers/summary_provider.dart';
 import 'package:recorod_to_text/providers/timer_provider.dart';
 import 'package:recorod_to_text/ui/widgets/record_to_text_view.dart';
 import 'package:recorod_to_text/ui/widgets/row_record_data.dart';
 import 'package:recorod_to_text/ui/widgets/summary_text_view.dart';
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+class RecordContents extends StatelessWidget {
+  const RecordContents({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -19,9 +19,9 @@ class HomePage extends StatelessWidget {
         padding: EdgeInsets.symmetric(vertical: 16),
         child: Row(
           children: [
-            Expanded(child: _RecordOperationLayout()),
+            Expanded(child: _OperationView()),
             VerticalDivider(width: 1),
-            Expanded(child: _RecordDetailLayout()),
+            Expanded(child: _RecordToTextView()),
             VerticalDivider(width: 1),
             Expanded(child: _SummaryTextView()),
           ],
@@ -31,8 +31,8 @@ class HomePage extends StatelessWidget {
   }
 }
 
-class _RecordOperationLayout extends StatelessWidget {
-  const _RecordOperationLayout();
+class _OperationView extends StatelessWidget {
+  const _OperationView();
 
   @override
   Widget build(BuildContext context) {
@@ -40,8 +40,8 @@ class _RecordOperationLayout extends StatelessWidget {
       children: [
         _ViewTimer(),
         SizedBox(height: 16),
-        _RecordButtons(),
-        _ViewRecordList(),
+        _OperationButtons(),
+        _ListRecords(),
       ],
     );
   }
@@ -65,8 +65,8 @@ class _ViewTimer extends ConsumerWidget {
   }
 }
 
-class _RecordButtons extends ConsumerWidget {
-  const _RecordButtons();
+class _OperationButtons extends ConsumerWidget {
+  const _OperationButtons();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -99,8 +99,8 @@ class _RecordButtons extends ConsumerWidget {
   }
 }
 
-class _ViewRecordList extends ConsumerWidget {
-  const _ViewRecordList();
+class _ListRecords extends ConsumerWidget {
+  const _ListRecords();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -129,8 +129,8 @@ class _ViewRecordList extends ConsumerWidget {
   }
 }
 
-class _RecordDetailLayout extends ConsumerWidget {
-  const _RecordDetailLayout();
+class _RecordToTextView extends ConsumerWidget {
+  const _RecordToTextView();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
