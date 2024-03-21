@@ -29,7 +29,7 @@ class RecordNotifier extends Notifier<AudioRecorder> {
         // 初回録音を実行し、以降は一定間隔で録音データを管理する
         ref.read(timerProvider.notifier).start();
         await state.start(config, path: appSetting.createSoundFilePath());
-        await _onLoadLoopRecording(config);
+        await _startRecordingLoop(config);
       }
     } catch (e, s) {
       stop();
@@ -46,15 +46,16 @@ class RecordNotifier extends Notifier<AudioRecorder> {
     _elapsedTime = 0;
   }
 
-  Future<void> _onLoadLoopRecording(RecordConfig config) async {
+  Future<void> _startRecordingLoop(RecordConfig config) async {
     final appSetting = ref.read(appSettingProvider);
-    // 指定の分ごとに音声データを保存する
+
     _segmentTimer = Timer.periodic(Duration(minutes: appSetting.recordIntervalMinutes), (timer) async {
       // 現在のセグメントを保存し、音声データを生成
       await _saveCurrentSegment();
       // 新しいセグメントの録音を開始
       await state.start(config, path: appSetting.createSoundFilePath());
     });
+
     ref.read(isRecordingProvider.notifier).state = true;
   }
 
@@ -66,6 +67,8 @@ class RecordNotifier extends Notifier<AudioRecorder> {
             time: ref.read(timerProvider) - _elapsedTime,
           );
       _elapsedTime = ref.read(timerProvider);
+    } else {
+      AppLogger.e('音声データの保存に失敗しました filePath=$filePath');
     }
   }
 
