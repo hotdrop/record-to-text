@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:recorod_to_text/common/app_logger.dart';
 import 'package:recorod_to_text/models/history.dart';
 import 'package:recorod_to_text/models/record_file.dart';
 import 'package:recorod_to_text/models/summary_text_result.dart';
@@ -11,12 +12,12 @@ class _HistoryRepoistory {
   final Ref ref;
 
   Future<List<History>> findAll() async {
-    // TODO ローカルストレージを使う予定
+    // TODO ローカルストレージで実装する
     await Future<void>.delayed(const Duration(seconds: 2));
     // ダミーデータ
     return [
       const History(
-        id: 1,
+        id: '1',
         title: '2024010203985',
         recordFiles: [
           RecordFile(id: '1', filePath: 'test', recordTime: 60, speechToText: 'おはようございます', speechToTextExecTime: 12, status: RecordToTextStatus.success),
@@ -26,7 +27,7 @@ class _HistoryRepoistory {
         summaryTextResult: SummaryTextResult('ここがサマリーです', 32),
       ),
       const History(
-        id: 2,
+        id: '2',
         title: 'これはテストデータです。長いタイトルを指定します。',
         recordFiles: [
           RecordFile(id: '4', filePath: 'test', recordTime: 60, speechToText: '二つ目です', speechToTextExecTime: 15, status: RecordToTextStatus.success),
@@ -34,7 +35,7 @@ class _HistoryRepoistory {
         summaryTextResult: null,
       ),
       const History(
-        id: 3,
+        id: '3',
         title: 'タイトルのデフォルトは1つ目のRecordFileのidである日付にする予定',
         recordFiles: [
           RecordFile(id: '5', filePath: 'test', recordTime: 60, speechToText: 'アイウエオ', speechToTextExecTime: 15, status: RecordToTextStatus.success),
@@ -45,7 +46,7 @@ class _HistoryRepoistory {
         summaryTextResult: SummaryTextResult('サマリー3です', 25),
       ),
       const History(
-        id: 4,
+        id: '4',
         title: '履歴4',
         recordFiles: [
           RecordFile(id: '5', filePath: 'test', recordTime: 60, speechToText: 'アイウエオ', speechToTextExecTime: 15, status: RecordToTextStatus.success),
@@ -53,5 +54,10 @@ class _HistoryRepoistory {
         summaryTextResult: SummaryTextResult('サマリー作成は結構時間かかる', 25),
       ),
     ];
+  }
+
+  Future<void> save(History history) async {
+    // TODO 保存処理を実装する
+    AppLogger.d('履歴を保存します id=${history.id}');
   }
 }

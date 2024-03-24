@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:recorod_to_text/models/record_file.dart';
+import 'package:recorod_to_text/providers/history_provider.dart';
 import 'package:recorod_to_text/repository/record_repository.dart';
 
 final recordFilesProvider = NotifierProvider<RecordFilesNotifier, List<RecordFile>>(RecordFilesNotifier.new);
@@ -43,16 +44,20 @@ class RecordFilesNotifier extends Notifier<List<RecordFile>> {
   Future<RecordFile> _executeToText(RecordFile recordFile) async {
     try {
       final result = await ref.read(gptRepositoryProvider).speechToText(recordFile);
-      return recordFile.copyWith(
+      final newRecordFile = recordFile.copyWith(
         speechToText: result.text,
         speechToTextExecTime: result.executeTime,
         status: RecordToTextStatus.success,
       );
+      ref.read(historiesProvider.notifier).addRecordFile(newRecordFile);
+      return newRecordFile;
     } catch (e) {
-      return recordFile.copyWith(
+      final newRecordFile = recordFile.copyWith(
         status: RecordToTextStatus.error,
         errorMessage: '$e',
       );
+      ref.read(historiesProvider.notifier).addRecordFile(newRecordFile);
+      return newRecordFile;
     }
   }
 

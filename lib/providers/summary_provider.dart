@@ -29,7 +29,9 @@ class SummaryNotifier extends AsyncNotifier<SummaryTextResult?> {
       return null;
     }
     final targetText = successRecordFiles.map((e) => e.speechToText ?? '').join('');
-    return await ref.read(gptRepositoryProvider).requestSummary(targetText);
+    final summaryResult = await ref.read(gptRepositoryProvider).requestSummary(targetText);
+    ref.read(historiesProvider.notifier).addSummaryTextResult(summaryResult);
+    return summaryResult;
   }
 
   Future<void> retry() async {
@@ -44,7 +46,9 @@ class SummaryNotifier extends AsyncNotifier<SummaryTextResult?> {
     state = await AsyncValue.guard(() async {
       final successRecordFiles = recordFiles.where((r) => r.isSuccess());
       final targetText = successRecordFiles.map((e) => e.speechToText ?? '').join('');
-      return await ref.read(gptRepositoryProvider).requestSummary(targetText);
+      final summaryResult = await ref.read(gptRepositoryProvider).requestSummary(targetText);
+      ref.read(historiesProvider.notifier).addSummaryTextResult(summaryResult);
+      return summaryResult;
     });
   }
 
