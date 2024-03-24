@@ -19,11 +19,11 @@ class RecordContents extends StatelessWidget {
         padding: EdgeInsets.symmetric(vertical: 16),
         child: Row(
           children: [
-            Expanded(child: _OperationView()),
+            Expanded(flex: 2, child: _OperationView()),
             VerticalDivider(width: 1),
-            Expanded(child: _RecordToTextView()),
+            Expanded(flex: 3, child: _RecordToTextView()),
             VerticalDivider(width: 1),
-            Expanded(child: _SummaryTextView()),
+            Expanded(flex: 3, child: _SummaryTextView()),
           ],
         ),
       ),
@@ -80,18 +80,19 @@ class _OperationButtons extends ConsumerWidget {
       );
     }
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+    return Wrap(
+      alignment: WrapAlignment.center,
+      runSpacing: 8,
       children: [
         ElevatedButton.icon(
           onPressed: !isRecording ? () => ref.read(recordProvider.notifier).start() : null,
-          label: const Text('録音開始'),
-          icon: const Icon(Icons.fiber_manual_record_rounded),
+          label: const Text('開始'),
+          icon: Icon(Icons.fiber_manual_record_rounded, color: isRecording ? null : Colors.red),
         ),
         const SizedBox(width: 16),
         ElevatedButton.icon(
           onPressed: isRecording ? () => ref.read(recordProvider.notifier).stop() : null,
-          label: const Text('録音停止'),
+          label: const Text('停止'),
           icon: const Icon(Icons.stop),
         ),
       ],

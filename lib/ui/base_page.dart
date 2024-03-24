@@ -42,11 +42,13 @@ class _MenuList extends ConsumerWidget {
       children: [
         _SelectMenu(
           icon: Icons.record_voice_over,
-          label: 'Record',
+          label: 'New Record',
           onTap: () {
-            // 履歴が選択されている場合があるのでクリアする
-            // TODO 録音中はクリアしてはいけない
-            ref.read(historiesProvider.notifier).clear();
+            // 履歴が選択されている場合があるのでリストをクリアする。ただ録音中はクリアしない。履歴機能ができたらこの分岐は不要
+            final isRecording = ref.read(isRecordingProvider);
+            if (!isRecording) {
+              ref.read(historiesProvider.notifier).clear();
+            }
             ref.read(selectMenuProvider.notifier).selectRecord();
           },
         ),
