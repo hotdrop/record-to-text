@@ -45,6 +45,7 @@ class _MenuList extends ConsumerWidget {
           label: 'Record',
           onTap: () {
             // 履歴が選択されている場合があるのでクリアする
+            // TODO 録音中はクリアしてはいけない
             ref.read(historiesProvider.notifier).clear();
             ref.read(selectMenuProvider.notifier).selectRecord();
           },
