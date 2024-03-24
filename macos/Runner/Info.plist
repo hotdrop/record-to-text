@@ -28,5 +28,7 @@
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+  <key>NSMicrophoneUsageDescription</key>
+	<string>このアプリは音声を録音します。アプリを利用する場合、マイクアクセスの許可をお願いします</string>
 </dict>
 </plist>
