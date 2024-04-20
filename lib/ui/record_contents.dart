@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:recorod_to_text/providers/app_setting_provider.dart';
+import 'package:recorod_to_text/providers/history_provider.dart';
 import 'package:recorod_to_text/providers/record_files_provider.dart';
 import 'package:recorod_to_text/providers/record_provider.dart';
 import 'package:recorod_to_text/providers/summary_provider.dart';
@@ -9,11 +10,16 @@ import 'package:recorod_to_text/ui/widgets/record_to_text_view.dart';
 import 'package:recorod_to_text/ui/widgets/row_record_data.dart';
 import 'package:recorod_to_text/ui/widgets/summary_text_view.dart';
 
-class RecordContents extends StatelessWidget {
+class RecordContents extends ConsumerWidget {
   const RecordContents({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final loadingHistory = ref.watch(historyNowLoadingProvider);
+    if (loadingHistory) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
     return const Scaffold(
       body: Padding(
         padding: EdgeInsets.symmetric(vertical: 16),

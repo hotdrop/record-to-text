@@ -8,42 +8,23 @@ import 'package:recorod_to_text/providers/record_files_provider.dart';
 import 'package:recorod_to_text/providers/summary_provider.dart';
 import 'package:recorod_to_text/repository/history_repository.dart';
 
-final historiesProvider = NotifierProvider<_HistoriesNotifier, List<History>>(_HistoriesNotifier.new);
+final currentHistoryProvider = NotifierProvider<_CurrentHistoryNotifier, History?>(_CurrentHistoryNotifier.new);
 
-class _HistoriesNotifier extends Notifier<List<History>> {
+class _CurrentHistoryNotifier extends Notifier<History?> {
   @override
-  List<History> build() {
-    return [];
+  History? build() {
+    return null;
   }
 
-  String? _selectedHistoryId;
-
-  Future<void> onLoad() async {
-    final histories = await ref.read(historyRepositoryProvider).findAll();
-    state = [...histories];
-  }
-
-  Future<void> setHistory(History history) async {
-    ref.read(historyNowLoadingProvider.notifier).state = true;
+  Future<void> currentSet(History history) async {
+    // 取得した履歴をそれぞれ録音データとサマリーデータにセットする。サマリーはAsyncNotifierProviderなのでawaitつけている
     ref.read(recordFilesProvider.notifier).setHistory(history.recordFiles);
     await ref.read(summaryProvider.notifier).setHistory(history.summaryTextResult);
-    _selectedHistoryId = history.id;
-    ref.read(historyNowLoadingProvider.notifier).state = false;
+    state = history;
   }
 
-  Future<void> clear() async {
-    ref.read(historyNowLoadingProvider.notifier).state = true;
-    ref.invalidate(recordFilesProvider);
-    ref.invalidate(summaryProvider);
-    _selectedHistoryId = null;
-    ref.read(historyNowLoadingProvider.notifier).state = false;
-  }
-
-  ///
-  /// 履歴に録音データを追加
-  ///
-  Future<void> addRecordFile(RecordFile recordFile) async {
-    if (_selectedHistoryId == null) {
+  Future<void> addRecord(RecordFile recordFile) async {
+    if (state == null) {
       final text = recordFile.speechToText ?? 'no data';
       final newHistory = History(
         id: History.createId(),
@@ -51,30 +32,70 @@ class _HistoriesNotifier extends Notifier<List<History>> {
         recordFiles: [recordFile],
       );
       await ref.read(historyRepositoryProvider).save(newHistory);
-      _selectedHistoryId = newHistory.id;
-      state = [newHistory, ...state];
-      return;
+      state = newHistory;
+    } else {
+      // 既存録音データに追加
+      state!.upsertRecoreFile(recordFile);
+      await ref.read(historyRepositoryProvider).save(state!);
     }
+  }
 
-    // 既存録音データに追加
-    final idx = state.indexWhere((e) => e.id == _selectedHistoryId);
-    final newHistory = state[idx].upsertRecoreFile(recordFile);
+  Future<void> addSummary(SummaryTextResult result) async {
+    if (state != null) {
+      final newHistory = state!.copyWith(summaryTextResult: result);
+      await ref.read(historyRepositoryProvider).save(newHistory);
+      state = newHistory;
+    }
+  }
+}
 
-    await ref.read(historyRepositoryProvider).save(newHistory);
+final historiesProvider = NotifierProvider<_HistoriesNotifier, List<HistoryTitle>>(_HistoriesNotifier.new);
 
-    state = List.of(state)..[idx] = newHistory;
+class _HistoriesNotifier extends Notifier<List<HistoryTitle>> {
+  @override
+  List<HistoryTitle> build() {
+    return [];
+  }
+
+  Future<void> onLoad() async {
+    final historyTitles = await ref.read(historyRepositoryProvider).findTitles();
+    state = [...historyTitles];
+  }
+
+  Future<void> setHistory(HistoryTitle historyTitle) async {
+    ref.read(historyNowLoadingProvider.notifier).state = true;
+    final history = await ref.read(historyRepositoryProvider).find(historyTitle.id);
+    await ref.read(currentHistoryProvider.notifier).currentSet(history);
+    ref.read(historyNowLoadingProvider.notifier).state = false;
+  }
+
+  Future<void> clear() async {
+    ref.read(historyNowLoadingProvider.notifier).state = true;
+    ref.invalidate(recordFilesProvider);
+    ref.invalidate(summaryProvider);
+    ref.read(currentHistoryProvider.notifier).state = null;
+    ref.read(historyNowLoadingProvider.notifier).state = false;
+  }
+
+  ///
+  /// 録音データを保存する
+  ///
+  Future<void> addRecordFile(RecordFile recordFile) async {
+    final currentHistory = ref.read(currentHistoryProvider);
+    if (currentHistory == null) {
+      ref.read(currentHistoryProvider.notifier).addRecord(recordFile);
+      // 履歴を選択していない＝録音データが新規の場合は一覧をロードする
+      await onLoad();
+    } else {
+      ref.read(currentHistoryProvider.notifier).addRecord(recordFile);
+    }
   }
 
   ///
   /// 履歴情報にサマリーデータを追加
   ///
   Future<void> addSummaryTextResult(SummaryTextResult result) async {
-    final idx = state.indexWhere((e) => e.id == _selectedHistoryId);
-    final newHistory = state[idx].copyWith(summaryTextResult: result);
-
-    await ref.read(historyRepositoryProvider).save(newHistory);
-
-    state = List.of(state)..[idx] = newHistory;
+    await ref.read(currentHistoryProvider.notifier).addSummary(result);
   }
 }
 

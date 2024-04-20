@@ -13,14 +13,16 @@ class GPTRepository {
 
   Future<RecordToTextResult> speechToText(RecordFile recordFile) async {
     final stopWatch = Stopwatch()..start();
-    final text = await ref.read(openAiApiProvider).speechToText(recordFile);
+    // final text = await ref.read(openAiApiProvider).speechToText(recordFile);
+    final text = 'ダミーテキストです！';
     stopWatch.stop();
     return RecordToTextResult(text, stopWatch.elapsedMilliseconds);
   }
 
   Future<SummaryTextResult> requestSummary(String text) async {
     final stopWatch = Stopwatch()..start();
-    final result = await ref.read(openAiApiProvider).requestSummary(text);
+    // final result = await ref.read(openAiApiProvider).requestSummary(text);
+    final result = 'ダミーサマリーです！';
     stopWatch.stop();
     return SummaryTextResult(result, stopWatch.elapsedMilliseconds);
   }

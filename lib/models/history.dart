@@ -1,6 +1,12 @@
 import 'package:recorod_to_text/models/record_file.dart';
 import 'package:recorod_to_text/models/summary_text_result.dart';
 
+class HistoryTitle {
+  const HistoryTitle({required this.id, required this.title});
+  final String id;
+  final String title;
+}
+
 class History {
   const History({required this.id, required this.title, required this.recordFiles, this.summaryTextResult});
 

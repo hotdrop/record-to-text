@@ -71,19 +71,18 @@ class _ListViewHistories extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final histories = ref.watch(historiesProvider);
+    final historyTitles = ref.watch(historiesProvider);
     final isRecording = ref.watch(isRecordingProvider);
 
-    // TODO 履歴が多くなる可能性を考慮しページネーションや遅延ローディングを検討する
     return Expanded(
       child: ListView.builder(
-        itemCount: histories.length,
+        itemCount: historyTitles.length,
         itemBuilder: (context, index) => RowHistory(
-          histories[index],
+          historyTitles[index],
           onTap: isRecording
               ? null
               : () async {
-                  await ref.read(historiesProvider.notifier).setHistory(histories[index]);
+                  await ref.read(historiesProvider.notifier).setHistory(historyTitles[index]);
                   ref.read(selectMenuProvider.notifier).selectRecord();
                 },
         ),
