@@ -2,18 +2,26 @@ import 'package:recorod_to_text/models/record_item.dart';
 import 'package:recorod_to_text/models/summary_text_result.dart';
 
 class RecordOnlyTitle {
-  const RecordOnlyTitle({required this.id, required this.title});
+  const RecordOnlyTitle({required this.id, required this.title, required this.createAt});
   final int id;
   final String title;
+  final DateTime createAt;
 }
 
 class Record {
-  const Record({required this.id, required this.title, required this.recordItems, this.summaryTextResult});
+  const Record({
+    required this.id,
+    required this.title,
+    required this.recordItems,
+    this.summaryTextResult,
+    required this.createAt,
+  });
 
   final int id;
   final String title;
   final List<RecordItem> recordItems;
   final SummaryTextResult? summaryTextResult;
+  final DateTime createAt;
 
   Record upsertRecoreFile(RecordItem newRecordItem) {
     final idx = recordItems.indexWhere((e) => e.id == newRecordItem.id);
@@ -34,6 +42,7 @@ class Record {
       title: title ?? this.title,
       recordItems: recordItems ?? this.recordItems,
       summaryTextResult: summaryTextResult ?? this.summaryTextResult,
+      createAt: createAt,
     );
   }
 }

@@ -5,12 +5,16 @@ import 'package:path_provider/path_provider.dart';
 import 'package:recorod_to_text/providers/app_setting_provider.dart';
 import 'package:recorod_to_text/providers/record_provider.dart';
 import 'package:recorod_to_text/repository/app_setting_repository.dart';
+import 'package:recorod_to_text/repository/local/app_database.dart';
 
 ///
 /// ここでアプリに必要な初期処理を行う
 ///
 final appInitFutureProvider = FutureProvider((ref) async {
-  // 履歴データロード
+  // ローカルストレージ初期化
+  await ref.read(databaseProvider).init();
+
+  // 録音データロード
   await ref.read(recordsProvider.notifier).onLoad();
 
   // 設定系の値を取得

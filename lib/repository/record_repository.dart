@@ -12,7 +12,7 @@ class _RecordRepoistory {
   final Ref ref;
 
   Future<List<RecordOnlyTitle>> findTitles() async {
-    return await ref.read(recordDaoProvider).findTitles();
+    return await ref.read(recordDaoProvider).findRecordOnlyTitles();
   }
 
   Future<Record> find(int id) async {
@@ -31,6 +31,7 @@ class _RecordRepoistory {
       id: 5,
       title: title,
       recordItems: [recordItem],
+      createAt: DateTime.now(),
     );
   }
 }
