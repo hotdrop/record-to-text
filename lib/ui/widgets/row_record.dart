@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:recorod_to_text/models/history.dart';
+import 'package:recorod_to_text/models/record.dart';
 
-class RowHistory extends StatelessWidget {
-  const RowHistory(this.historyTitle, {super.key, required this.onTap});
+class RowRecord extends StatelessWidget {
+  const RowRecord(this.recordOnlyTitle, {super.key, required this.onTap});
 
-  final HistoryTitle historyTitle;
+  final RecordOnlyTitle recordOnlyTitle;
   final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     return Tooltip(
-      message: historyTitle.title,
+      message: recordOnlyTitle.title,
       child: ListTile(
         leading: const Icon(Icons.history),
         title: Text(
-          historyTitle.title,
+          recordOnlyTitle.title,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(color: (onTap != null) ? null : Colors.grey),
         ),

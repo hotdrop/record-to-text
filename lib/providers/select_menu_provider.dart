@@ -6,11 +6,11 @@ class _SelectMenuNotifier extends Notifier<int> {
   @override
   int build() => 0;
 
-  void selectRecord() {
+  void selectRecordMenu() {
     state = 0;
   }
 
-  void selectSetting() {
+  void selectSettingMenu() {
     state = 1;
   }
 }

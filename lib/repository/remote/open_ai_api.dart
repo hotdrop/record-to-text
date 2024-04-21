@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:recorod_to_text/common/app_logger.dart';
-import 'package:recorod_to_text/models/record_file.dart';
+import 'package:recorod_to_text/models/record_item.dart';
 import 'package:recorod_to_text/providers/app_setting_provider.dart';
 
 final openAiApiProvider = Provider((ref) => _OpenAiApi(ref));
@@ -14,7 +14,7 @@ class _OpenAiApi {
 
   final Ref ref;
 
-  Future<String> speechToText(RecordFile recordFile) async {
+  Future<String> speechToText(RecordItem recordItem) async {
     final dio = ref.read(_dioProvider);
     final apiKey = ref.read(appSettingProvider).apiKey;
 
@@ -26,7 +26,7 @@ class _OpenAiApi {
       final response = await dio.post(
         'https://api.openai.com/v1/audio/transcriptions',
         data: FormData.fromMap({
-          'file': await MultipartFile.fromFile(recordFile.filePath, filename: recordFile.fileName()),
+          'file': await MultipartFile.fromFile(recordItem.filePath, filename: recordItem.fileName()),
           'model': 'whisper-1',
         }),
       );

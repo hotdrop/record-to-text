@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:recorod_to_text/models/record_file.dart';
+import 'package:recorod_to_text/models/record_item.dart';
+import 'package:recorod_to_text/models/record_status_enum.dart';
 
 class RowRecordData extends StatelessWidget {
   const RowRecordData({
     super.key,
-    required this.recordFile,
+    required this.recordItem,
     required this.isSelected,
     required this.selectColor,
     required this.onTap,
   });
 
-  final RecordFile recordFile;
+  final RecordItem recordItem;
   final bool isSelected;
   final Color selectColor;
   final VoidCallback onTap;
@@ -31,14 +32,14 @@ class RowRecordData extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(recordFile.fileName(), overflow: TextOverflow.ellipsis),
+              Text(recordItem.fileName(), overflow: TextOverflow.ellipsis),
               const Divider(),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('録音:${recordFile.recordTime}秒'),
+                  Text('録音:${recordItem.recordTime}秒'),
                   const SizedBox(width: 8),
-                  _statusIcon(recordFile.status),
+                  _statusIcon(recordItem.status),
                 ],
               ),
             ],

@@ -1,29 +1,36 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:recorod_to_text/models/record_file.dart';
-import 'package:recorod_to_text/models/record_to_text_result.dart';
-import 'package:recorod_to_text/models/summary_text_result.dart';
-import 'package:recorod_to_text/repository/remote/open_ai_api.dart';
+import 'package:recorod_to_text/common/app_logger.dart';
+import 'package:recorod_to_text/models/record.dart';
+import 'package:recorod_to_text/models/record_item.dart';
+import 'package:recorod_to_text/repository/local/record_dao.dart';
 
-final gptRepositoryProvider = Provider((ref) => GPTRepository(ref));
+final recordRepositoryProvider = Provider((ref) => _RecordRepoistory(ref));
 
-class GPTRepository {
-  const GPTRepository(this.ref);
+class _RecordRepoistory {
+  const _RecordRepoistory(this.ref);
 
   final Ref ref;
 
-  Future<RecordToTextResult> speechToText(RecordFile recordFile) async {
-    final stopWatch = Stopwatch()..start();
-    // final text = await ref.read(openAiApiProvider).speechToText(recordFile);
-    final text = 'ダミーテキストです！';
-    stopWatch.stop();
-    return RecordToTextResult(text, stopWatch.elapsedMilliseconds);
+  Future<List<RecordOnlyTitle>> findTitles() async {
+    return await ref.read(recordDaoProvider).findTitles();
   }
 
-  Future<SummaryTextResult> requestSummary(String text) async {
-    final stopWatch = Stopwatch()..start();
-    // final result = await ref.read(openAiApiProvider).requestSummary(text);
-    final result = 'ダミーサマリーです！';
-    stopWatch.stop();
-    return SummaryTextResult(result, stopWatch.elapsedMilliseconds);
+  Future<Record> find(int id) async {
+    return await ref.read(recordDaoProvider).find(id);
+  }
+
+  Future<void> save(Record record) async {
+    // TODO 保存処理を実装する
+    AppLogger.d('履歴を保存します id=${record.id}');
+  }
+
+  Future<Record> saveNew({required String title, required RecordItem recordItem}) async {
+    // TODO 保存処理を実装する
+    AppLogger.d('新規で履歴を作成/保存します title=$title');
+    return Record(
+      id: 5,
+      title: title,
+      recordItems: [recordItem],
+    );
   }
 }

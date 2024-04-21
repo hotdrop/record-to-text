@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:recorod_to_text/providers/history_provider.dart';
 import 'package:recorod_to_text/providers/record_provider.dart';
+import 'package:recorod_to_text/providers/record_controller_provider.dart';
 import 'package:recorod_to_text/providers/select_menu_provider.dart';
 import 'package:recorod_to_text/ui/app_setting_contents.dart';
 import 'package:recorod_to_text/ui/record_contents.dart';
-import 'package:recorod_to_text/ui/widgets/row_history.dart';
+import 'package:recorod_to_text/ui/widgets/row_record.dart';
 
 class BasePage extends ConsumerWidget {
   const BasePage({super.key});
@@ -44,46 +44,46 @@ class _MenuList extends ConsumerWidget {
           icon: Icons.record_voice_over,
           label: 'New Record',
           onTap: () {
-            // 履歴が選択されている場合があるのでリストをクリアする。ただ録音中はクリアしない。履歴機能ができたらこの分岐は不要
-            final isRecording = ref.read(isRecordingProvider);
+            // TODO 履歴が選択されている場合があるのでリストをクリアする。録音中はクリアしない。履歴機能ができたらこの分岐は不要
+            final isRecording = ref.read(nowRecordingProvider);
             if (!isRecording) {
-              ref.read(historiesProvider.notifier).clear();
+              ref.read(recordsProvider.notifier).clear();
             }
-            ref.read(selectMenuProvider.notifier).selectRecord();
+            ref.read(selectMenuProvider.notifier).selectRecordMenu();
           },
         ),
         const Divider(),
-        const _ListViewHistories(),
+        const _ListViewRecords(),
         const Spacer(),
         const Divider(),
         _SelectMenu(
           icon: Icons.settings,
           label: 'Setting',
-          onTap: () => ref.read(selectMenuProvider.notifier).selectSetting(),
+          onTap: () => ref.read(selectMenuProvider.notifier).selectSettingMenu(),
         ),
       ],
     );
   }
 }
 
-class _ListViewHistories extends ConsumerWidget {
-  const _ListViewHistories();
+class _ListViewRecords extends ConsumerWidget {
+  const _ListViewRecords();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final historyTitles = ref.watch(historiesProvider);
-    final isRecording = ref.watch(isRecordingProvider);
+    final recordTitles = ref.watch(recordsProvider);
+    final nowRecording = ref.watch(nowRecordingProvider);
 
     return Expanded(
       child: ListView.builder(
-        itemCount: historyTitles.length,
-        itemBuilder: (context, index) => RowHistory(
-          historyTitles[index],
-          onTap: isRecording
+        itemCount: recordTitles.length,
+        itemBuilder: (context, index) => RowRecord(
+          recordTitles[index],
+          onTap: nowRecording
               ? null
               : () async {
-                  await ref.read(historiesProvider.notifier).setHistory(historyTitles[index]);
-                  ref.read(selectMenuProvider.notifier).selectRecord();
+                  await ref.read(recordsProvider.notifier).selectRecord(recordTitles[index]);
+                  ref.read(selectMenuProvider.notifier).selectRecordMenu();
                 },
         ),
       ),
