@@ -33,14 +33,14 @@ class _CurrentRecordNotifier extends Notifier<Record?> {
     } else {
       // 既存録音データに追加
       state!.upsertRecoreFile(recordItem);
-      await ref.read(recordRepositoryProvider).save(state!);
+      await ref.read(recordRepositoryProvider).update(state!);
     }
   }
 
   Future<void> setSummaryTextResult(SummaryTextResult result) async {
     if (state != null) {
       final recordAddSummary = state!.copyWith(summaryTextResult: result);
-      await ref.read(recordRepositoryProvider).save(recordAddSummary);
+      await ref.read(recordRepositoryProvider).update(recordAddSummary);
       state = recordAddSummary;
     }
   }

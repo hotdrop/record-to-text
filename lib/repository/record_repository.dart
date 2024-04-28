@@ -19,11 +19,6 @@ class _RecordRepoistory {
     return await ref.read(recordDaoProvider).find(id);
   }
 
-  Future<void> save(Record record) async {
-    // TODO 保存処理を実装する
-    AppLogger.d('履歴を保存します id=${record.id}');
-  }
-
   Future<Record> saveNew({required String title, required RecordItem recordItem}) async {
     // TODO 保存処理を実装する
     AppLogger.d('新規で履歴を作成/保存します title=$title');
@@ -33,5 +28,10 @@ class _RecordRepoistory {
       recordItems: [recordItem],
       createAt: DateTime.now(),
     );
+  }
+
+  Future<void> update(Record record) async {
+    // TODO 保存処理を実装する
+    AppLogger.d('履歴を保存します id=${record.id}');
   }
 }
