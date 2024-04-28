@@ -36,6 +36,10 @@ class _RecordDao {
     final entities = isar.recordEntitys;
 
     final target = await entities.filter().idEqualTo(id).findFirst();
+    SummaryTextResult? summary;
+    if (target?.summaryText != null && target?.summaryExecuteTime != null) {
+      summary = SummaryTextResult(target!.summaryText!, target.summaryExecuteTime!);
+    }
     return Record(
       id: target!.id,
       title: target.title,
@@ -50,6 +54,7 @@ class _RecordDao {
                 errorMessage: item.errorMessage,
               ))
           .toList(),
+      summaryTextResult: summary,
       createAt: target.createAt,
     );
   }
@@ -62,14 +67,12 @@ class _RecordDao {
     );
 
     final isar = ref.read(databaseProvider).isar;
-    await isar.writeTxn(() async {
-      await isar.recordEntitys.put(recordEntity);
-    });
+    final newId = await isar.writeTxn(() async => await isar.recordEntitys.put(recordEntity));
 
-    return _entityToRecord(recordEntity);
+    return _entityToRecord(newId, recordEntity);
   }
 
-  Future<void> save(Record record) async {
+  Future<void> update(Record record) async {
     final newEntity = RecordEntity(
       title: record.title,
       recordItems: record.recordItems.map((e) => _toRecordItemEntity(e)).toList(),
@@ -79,24 +82,24 @@ class _RecordDao {
     );
     final isar = ref.read(databaseProvider).isar;
     final entities = isar.recordEntitys;
-    final target = await entities.filter().idEqualTo(record.id).findFirst();
-    if (target == null) {
-      throw StateError('ID=${record.id}のデータがローカルに存在しません');
-    }
 
     await isar.writeTxn(() async {
-      await entities.put(newEntity);
+      final target = await entities.get(record.id);
+      if (target != null) {
+        newEntity.id = target.id;
+        await entities.put(newEntity);
+      }
     });
   }
 
-  Record _entityToRecord(RecordEntity entity) {
+  Record _entityToRecord(int id, RecordEntity entity) {
     SummaryTextResult? summary;
     if (entity.summaryText != null) {
       summary = SummaryTextResult(entity.summaryText!, entity.summaryExecuteTime!);
     }
 
     return Record(
-      id: entity.id,
+      id: id,
       title: entity.title,
       recordItems: entity.recordItems.map((e) => _entityToItem(e)).toList(),
       summaryTextResult: summary,

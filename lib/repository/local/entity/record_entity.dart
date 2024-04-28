@@ -12,7 +12,9 @@ class RecordEntity {
     this.summaryExecuteTime,
     required this.createAt,
   });
-  final Id id = Isar.autoIncrement;
+  // finalをつけるとIDがInt64の最小値（マーカー値）になってしまうのでつけない
+  // https://github.com/isar/isar/issues/1389
+  Id id = Isar.autoIncrement;
   final String title;
   final List<RecordItemEntity> recordItems;
   final String? summaryText;
