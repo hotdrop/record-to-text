@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:record/record.dart';
 import 'package:recorod_to_text/providers/app_setting_provider.dart';
-import 'package:recorod_to_text/providers/record_provider.dart';
+import 'package:recorod_to_text/providers/record_controller_provider.dart';
 import 'package:recorod_to_text/ui/widgets/drop_down_device.dart';
 import 'package:recorod_to_text/ui/widgets/drop_down_record_interval.dart';
 
@@ -13,11 +13,12 @@ class AppSettingContents extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Scaffold(
       body: Padding(
-        padding: EdgeInsets.all(24),
+        padding: EdgeInsets.symmetric(horizontal: 24),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              SizedBox(height: 16),
               _TextFieldApiKey(),
               SizedBox(height: 16),
               _DropdownRecordIntervalMinutes(),

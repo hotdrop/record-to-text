@@ -1,7 +1,8 @@
 import 'package:path/path.dart' as path;
+import 'package:recorod_to_text/models/record_status_enum.dart';
 
-class RecordFile {
-  const RecordFile({
+class RecordItem {
+  const RecordItem({
     required this.id,
     required this.filePath,
     required this.recordTime,
@@ -26,13 +27,13 @@ class RecordFile {
   bool isError() => status == RecordToTextStatus.error;
   bool isWait() => status == RecordToTextStatus.wait;
 
-  RecordFile copyWith({
+  RecordItem copyWith({
     String? speechToText,
     int? speechToTextExecTime,
     RecordToTextStatus? status,
     String? errorMessage,
   }) {
-    return RecordFile(
+    return RecordItem(
       id: id,
       filePath: filePath,
       recordTime: recordTime,
@@ -43,5 +44,3 @@ class RecordFile {
     );
   }
 }
-
-enum RecordToTextStatus { wait, success, error }

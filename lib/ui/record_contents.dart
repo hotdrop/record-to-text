@@ -1,19 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:recorod_to_text/providers/app_setting_provider.dart';
-import 'package:recorod_to_text/providers/record_files_provider.dart';
 import 'package:recorod_to_text/providers/record_provider.dart';
-import 'package:recorod_to_text/providers/summary_provider.dart';
+import 'package:recorod_to_text/providers/record_items_provider.dart';
+import 'package:recorod_to_text/providers/record_controller_provider.dart';
+import 'package:recorod_to_text/providers/summary_controller_provider.dart';
 import 'package:recorod_to_text/providers/timer_provider.dart';
 import 'package:recorod_to_text/ui/widgets/record_to_text_view.dart';
 import 'package:recorod_to_text/ui/widgets/row_record_data.dart';
 import 'package:recorod_to_text/ui/widgets/summary_text_view.dart';
 
-class RecordContents extends StatelessWidget {
+class RecordContents extends ConsumerWidget {
   const RecordContents({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final nowRecording = ref.watch(recordLoadingProvider);
+    if (nowRecording) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
     return const Scaffold(
       body: Padding(
         padding: EdgeInsets.symmetric(vertical: 16),
@@ -53,12 +59,12 @@ class _ViewTimer extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final timer = ref.watch(timerProvider);
-    final isRunning = ref.watch(isRecordingProvider);
-    final color = isRunning ? Colors.redAccent : Colors.green;
+    final nowRecording = ref.watch(nowRecordingProvider);
+    final color = nowRecording ? Colors.redAccent : Colors.green;
 
     return Column(
       children: [
-        Text(isRunning ? '録音中' : '停止', style: TextStyle(color: color, fontSize: 36)),
+        Text(nowRecording ? '録音中' : '停止', style: TextStyle(color: color, fontSize: 36)),
         Text('録音時間: $timer 秒', style: TextStyle(color: color)),
       ],
     );
@@ -70,7 +76,7 @@ class _OperationButtons extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isRecording = ref.watch(isRecordingProvider);
+    final nowRecording = ref.watch(nowRecordingProvider);
     final apiKey = ref.watch(appSettingProvider.select((value) => value.apiKey));
 
     if (apiKey.isEmpty) {
@@ -85,13 +91,13 @@ class _OperationButtons extends ConsumerWidget {
       runSpacing: 8,
       children: [
         ElevatedButton.icon(
-          onPressed: !isRecording ? () => ref.read(recordProvider.notifier).start() : null,
+          onPressed: !nowRecording ? () => ref.read(recordControllerProvider.notifier).start() : null,
           label: const Text('開始'),
-          icon: Icon(Icons.fiber_manual_record_rounded, color: isRecording ? null : Colors.red),
+          icon: Icon(Icons.fiber_manual_record_rounded, color: nowRecording ? null : Colors.red),
         ),
         const SizedBox(width: 16),
         ElevatedButton.icon(
-          onPressed: isRecording ? () => ref.read(recordProvider.notifier).stop() : null,
+          onPressed: nowRecording ? () => ref.read(recordControllerProvider.notifier).stop() : null,
           label: const Text('停止'),
           icon: const Icon(Icons.stop),
         ),
@@ -105,23 +111,23 @@ class _ListRecords extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final recordFiles = ref.watch(recordFilesProvider);
-    final selectFileId = ref.watch(selectRecordFileStateProvider)?.id ?? -1;
+    final recordItems = ref.watch(recordItemsProvider);
+    final selectItemId = ref.watch(selectRecordItemStateProvider)?.id ?? -1;
     final isDarkMode = ref.watch(appSettingProvider).isDarkMode;
 
     return Flexible(
       child: ListView.builder(
         padding: const EdgeInsets.all(16),
-        itemCount: recordFiles.length,
+        itemCount: recordItems.length,
         itemBuilder: (context, index) {
-          final currentFile = recordFiles[index];
+          final currentFile = recordItems[index];
           return RowRecordData(
             key: ValueKey(currentFile.id),
-            recordFile: currentFile,
-            isSelected: currentFile.id == selectFileId,
+            recordItem: currentFile,
+            isSelected: currentFile.id == selectItemId,
             selectColor: isDarkMode ? const Color.fromARGB(255, 97, 97, 97) : const Color.fromARGB(255, 224, 224, 224),
             onTap: () {
-              ref.read(recordFilesProvider.notifier).selectRow(currentFile);
+              ref.read(recordItemsProvider.notifier).selectRow(currentFile);
             },
           );
         },
@@ -135,14 +141,14 @@ class _RecordToTextView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final selectFile = ref.watch(selectRecordFileStateProvider);
+    final selectItem = ref.watch(selectRecordItemStateProvider);
 
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: RecordToTextView(
-        selectFile,
+        selectItem,
         onErrorRetryButton: () async {
-          await ref.read(recordFilesProvider.notifier).retry(file: selectFile!);
+          await ref.read(recordItemsProvider.notifier).retry(file: selectItem!);
         },
       ),
     );
@@ -154,12 +160,12 @@ class _SummaryTextView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ref.watch(summaryProvider).when(
+    return ref.watch(summaryControllerProvider).when(
           data: (data) => SummayTextView(data),
           error: (e, s) => SummaryErrorTextView(
             errorMessage: 'エラーが発生しました\n$e',
             onPressed: () async {
-              await ref.read(summaryProvider.notifier).retry();
+              await ref.read(summaryControllerProvider.notifier).retry();
             },
           ),
           loading: () => const SummayLoadingView(),

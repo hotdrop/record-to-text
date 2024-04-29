@@ -1,27 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:recorod_to_text/common/int_extension.dart';
-import 'package:recorod_to_text/models/record_file.dart';
+import 'package:recorod_to_text/models/record_item.dart';
+import 'package:recorod_to_text/models/record_status_enum.dart';
 import 'package:recorod_to_text/ui/widgets/retry_button.dart';
 
 class RecordToTextView extends StatelessWidget {
-  const RecordToTextView(this.recordFile, {super.key, this.onErrorRetryButton});
+  const RecordToTextView(this.recordItem, {super.key, this.onErrorRetryButton});
 
-  final RecordFile? recordFile;
+  final RecordItem? recordItem;
   final VoidCallback? onErrorRetryButton;
 
   @override
   Widget build(BuildContext context) {
-    final record = recordFile;
+    final lRecordItem = recordItem;
 
-    if (record == null) {
+    if (lRecordItem == null) {
       return const _EmptyTextView();
     } else {
-      return switch (record.status) {
+      return switch (lRecordItem.status) {
         RecordToTextStatus.success => Column(
             children: [
-              _Header(textLength: record.speechToText!.length, execTimeStr: record.speechToTextExecTime.formatExecTime()),
+              _Header(textLength: lRecordItem.speechToText!.length, execTimeStr: lRecordItem.speechToTextExecTime.formatExecTime()),
               const Divider(),
-              _TextViewArea(record.speechToText!),
+              _TextViewArea(lRecordItem.speechToText!),
             ],
           ),
         RecordToTextStatus.error => Column(
@@ -29,7 +30,7 @@ class RecordToTextView extends StatelessWidget {
               const _Header(textLength: 0),
               const Divider(),
               RetryButton(onPressed: onErrorRetryButton),
-              _TextViewArea(record.errorMessage ?? '不明なエラーです', textColor: Colors.red),
+              _TextViewArea(lRecordItem.errorMessage ?? '不明なエラーです', textColor: Colors.red),
             ],
           ),
         RecordToTextStatus.wait => const _LoadingTextView(),
