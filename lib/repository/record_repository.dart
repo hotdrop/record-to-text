@@ -12,8 +12,13 @@ class _RecordRepoistory {
 
   final Ref ref;
 
+  ///
+  /// 録音データのタイトル一覧を、登録した日付の降順で取得する
+  ///
   Future<List<RecordOnlyTitle>> findTitles() async {
-    return await ref.read(recordDaoProvider).findRecordOnlyTitles();
+    final titles = await ref.read(recordDaoProvider).findRecordOnlyTitles();
+    titles.sort((a, b) => b.createAt.compareTo(a.createAt));
+    return titles;
   }
 
   Future<Record> find(int recordId) async {
