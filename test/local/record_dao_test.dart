@@ -23,17 +23,22 @@ void main() {
       overrides: [databaseProvider.overrideWith((_) => const TestAppDatabase())],
     );
     final dao = container.read(recordDaoProvider);
-    final item1 = await dao.saveNewRecord(title: 'テスト1', recordItem: _createRecordItem('test1'));
-    final item2 = await dao.saveNewRecord(title: 'テスト2', recordItem: _createRecordItem('test2'));
-    final item3 = await dao.saveNewRecord(title: 'テスト3', recordItem: _createRecordItem('test3'));
+
+    // テストデータ登録
+    final recordId1 = await dao.saveNewRecord(title: 'テスト1');
+    final recordId2 = await dao.saveNewRecord(title: 'テスト2');
+    final recordId3 = await dao.saveNewRecord(title: 'テスト3');
+
+    // テスト実行
     final records = await dao.findRecordOnlyTitles();
 
+    // 結果確認
     expect(records.length, 3);
-    expect(records[0].id, item1.id);
+    expect(records[0].id, recordId1);
     expect(records[0].title, 'テスト1');
-    expect(records[1].id, item2.id);
+    expect(records[1].id, recordId2);
     expect(records[1].title, 'テスト2');
-    expect(records[2].id, item3.id);
+    expect(records[2].id, recordId3);
     expect(records[2].title, 'テスト3');
   });
 
@@ -42,77 +47,155 @@ void main() {
       overrides: [databaseProvider.overrideWith((_) => const TestAppDatabase())],
     );
     final dao = container.read(recordDaoProvider);
-    await dao.saveNewRecord(title: 'テスト1', recordItem: _createRecordItem('test1'));
-    await dao.saveNewRecord(title: 'テスト3', recordItem: _createRecordItem('test3'));
-    final item2 = await dao.saveNewRecord(title: 'テスト2', recordItem: _createRecordItem('test2'));
 
-    final targetItem = await dao.find(item2.id);
+    // テストデータ登録
+    final recordId1 = await dao.saveNewRecord(title: 'テスト1');
+    await dao.upsertRecordItem(recordId: recordId1, item: _createRecordItem('test1'));
+    final recordId2 = await dao.saveNewRecord(title: 'テスト2');
+    await dao.upsertRecordItem(recordId: recordId2, item: _createRecordItem('test2'));
+    final recordId3 = await dao.saveNewRecord(title: 'テスト3');
+    await dao.upsertRecordItem(recordId: recordId3, item: _createRecordItem('test3'));
 
-    expect(targetItem.id, item2.id);
-    expect(targetItem.title, item2.title);
+    // テスト実行
+    final result = await dao.find(recordId2);
 
-    expect(targetItem.recordItems.length, 1);
-    final recordItem = targetItem.recordItems.first;
-    expect(recordItem.filePath, 'testpath');
-    expect(recordItem.recordTime, 60);
-    expect(recordItem.speechToText, 'テストです');
-    expect(recordItem.speechToTextExecTime, 10);
-    expect(recordItem.status, RecordToTextStatus.wait);
-    expect(recordItem.errorMessage, null);
+    // 結果確認
+    expect(result.id, recordId2);
+    expect(result.title, 'テスト2');
+    expect(result.recordItems.length, 1);
+    final resultItem = result.recordItems.first;
+    expect(resultItem.id, 'test2');
+    expect(resultItem.filePath, 'testpath');
+    expect(resultItem.recordTime, 60);
+    expect(resultItem.speechToText, 'テストです');
+    expect(resultItem.speechToTextExecTime, 10);
+    expect(resultItem.status, RecordToTextStatus.wait);
+    expect(resultItem.errorMessage, null);
   });
 
-  test('Recordの新規保存が正しく行えるか確認する', () async {
+  test('RecordItemの新規登録が正しく行えるか確認する', () async {
     final container = ProviderContainer(
       overrides: [databaseProvider.overrideWith((_) => const TestAppDatabase())],
     );
     final dao = container.read(recordDaoProvider);
-    final newRecord = await dao.saveNewRecord(title: '新規登録テスト', recordItem: _createRecordItem('test1'));
-    expect(newRecord.title, '新規登録テスト');
-    expect(newRecord.recordItems.length, 1);
 
-    final item = newRecord.recordItems.first;
-    expect(item.id, 'test1');
-    expect(item.filePath, 'testpath');
-    expect(item.recordTime, 60);
-    expect(item.speechToText, 'テストです');
-    expect(item.speechToTextExecTime, 10);
-    expect(item.status, RecordToTextStatus.wait);
-    expect(item.errorMessage, null);
+    // テストデータ登録
+    final recordId = await dao.saveNewRecord(title: 'テスト1');
+
+    // テスト実行
+    await dao.upsertRecordItem(recordId: recordId, item: _createRecordItem('test1'));
+
+    // テスト結果確認
+    final result = await dao.find(recordId);
+    expect(result.id, recordId);
+    expect(result.title, 'テスト1');
+    expect(result.recordItems.length, 1);
+    final resultItem = result.recordItems.first;
+    expect(resultItem.id, 'test1');
+    expect(resultItem.filePath, 'testpath');
+    expect(resultItem.recordTime, 60);
+    expect(resultItem.speechToText, 'テストです');
+    expect(resultItem.speechToTextExecTime, 10);
+    expect(resultItem.status, RecordToTextStatus.wait);
+    expect(resultItem.errorMessage, null);
   });
 
-  test('Recordの更新保存が正しく行えるか確認する', () async {
+  test('RecordItemの追加登録が正しく行えるか確認する', () async {
     final container = ProviderContainer(
       overrides: [databaseProvider.overrideWith((_) => const TestAppDatabase())],
     );
     final dao = container.read(recordDaoProvider);
-    final newRecord = await dao.saveNewRecord(title: 'テスト1', recordItem: _createRecordItem('test1'));
-    final updateRecord = newRecord.copyWith(
-      recordItems: [
-        ...newRecord.recordItems,
-        _createRecordItem('test2'),
-      ],
-      summaryTextResult: const SummaryTextResult('サマリーテキストです', 120),
+
+    // テストデータ登録
+    final recordId = await dao.saveNewRecord(title: 'テスト1');
+    await dao.upsertRecordItem(recordId: recordId, item: _createRecordItem('test1'));
+
+    // テスト実行
+    await dao.upsertRecordItem(recordId: recordId, item: _createRecordItem('test2'));
+
+    // テスト結果確認
+    final result = await dao.find(recordId);
+    expect(result.id, recordId);
+    expect(result.title, 'テスト1');
+    expect(result.recordItems.length, 2);
+    expect(result.recordItems[0].id, 'test1');
+    expect(result.recordItems[1].id, 'test2');
+  });
+
+  test('RecordItemの既存データ更新が正しく行えるか確認する', () async {
+    final container = ProviderContainer(
+      overrides: [databaseProvider.overrideWith((_) => const TestAppDatabase())],
+    );
+    final dao = container.read(recordDaoProvider);
+
+    // テストデータ登録
+    final recordId = await dao.saveNewRecord(title: 'テスト1');
+    await dao.upsertRecordItem(recordId: recordId, item: _createRecordItem('test1'));
+    final targetItem = _createRecordItem('test2');
+    await dao.upsertRecordItem(recordId: recordId, item: targetItem);
+
+    // テスト実行
+    final updateItem = targetItem.copyWith(
+      speechToText: '更新されたデータです',
+      speechToTextExecTime: 20,
+      errorMessage: 'テストです',
     );
 
-    await dao.update(updateRecord);
-    final resultRecord = await dao.find(updateRecord.id);
+    await dao.upsertRecordItem(recordId: recordId, item: updateItem);
+    final result = await dao.find(recordId);
 
-    expect(resultRecord.id, updateRecord.id);
-    expect(resultRecord.title, updateRecord.title);
-    expect(resultRecord.recordItems.length, 2);
+    expect(result.id, recordId);
+    expect(result.title, 'テスト1');
+    expect(result.recordItems.length, 2);
 
-    final resultRecordItem2 = resultRecord.recordItems[1];
-    expect(resultRecordItem2.id, 'test2');
-    expect(resultRecordItem2.filePath, 'testpath');
-    expect(resultRecordItem2.recordTime, 60);
-    expect(resultRecordItem2.speechToText, 'テストです');
-    expect(resultRecordItem2.speechToTextExecTime, 10);
-    expect(resultRecordItem2.status, RecordToTextStatus.wait);
-    expect(resultRecordItem2.errorMessage, null);
+    final resultItem = result.recordItems.where((e) => e.id == 'test2').first;
+    expect(resultItem.filePath, 'testpath');
+    expect(resultItem.recordTime, 60);
+    expect(resultItem.speechToText, '更新されたデータです');
+    expect(resultItem.speechToTextExecTime, 20);
+    expect(resultItem.status, RecordToTextStatus.wait);
+    expect(resultItem.errorMessage, 'テストです');
+  });
 
-    final resultSummary = resultRecord.summaryTextResult;
-    expect(resultSummary!.text, 'サマリーテキストです');
-    expect(resultSummary.executeTime, 120);
+  test('upsertSummaryの新規登録が正しく行えるか確認する', () async {
+    final container = ProviderContainer(
+      overrides: [databaseProvider.overrideWith((_) => const TestAppDatabase())],
+    );
+    final dao = container.read(recordDaoProvider);
+
+    // テストデータ登録
+    final recordId = await dao.saveNewRecord(title: 'テスト1');
+    await dao.upsertRecordItem(recordId: recordId, item: _createRecordItem('test1'));
+
+    // テスト実行
+    await dao.upsertSummary(recordId: recordId, summaryTextResult: const SummaryTextResult('サマリー', 10));
+
+    // テスト結果確認
+    final result = await dao.find(recordId);
+    final resultSummary = result.summaryTextResult;
+    expect(resultSummary!.text, 'サマリー');
+    expect(resultSummary.executeTime, 10);
+  });
+  test('upsertSummaryの既存データ更新が正しく行えるか確認する', () async {
+    final container = ProviderContainer(
+      overrides: [databaseProvider.overrideWith((_) => const TestAppDatabase())],
+    );
+    final dao = container.read(recordDaoProvider);
+
+    // テストデータ登録
+    final recordId = await dao.saveNewRecord(title: 'テスト1');
+    await dao.upsertRecordItem(recordId: recordId, item: _createRecordItem('test1'));
+    await dao.upsertRecordItem(recordId: recordId, item: _createRecordItem('test2'));
+    await dao.upsertSummary(recordId: recordId, summaryTextResult: const SummaryTextResult('サマリー', 10));
+
+    // テスト実行
+    await dao.upsertSummary(recordId: recordId, summaryTextResult: const SummaryTextResult('更新サマリー', 50));
+
+    // テスト結果確認
+    final result = await dao.find(recordId);
+    final resultSummary = result.summaryTextResult;
+    expect(resultSummary!.text, '更新サマリー');
+    expect(resultSummary.executeTime, 50);
   });
 }
 
