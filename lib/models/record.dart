@@ -23,7 +23,7 @@ class Record {
   final SummaryTextResult? summaryTextResult;
   final DateTime createAt;
 
-  Record upsertRecoreFile(RecordItem newRecordItem) {
+  Record setRecoreItem(RecordItem newRecordItem) {
     final idx = recordItems.indexWhere((e) => e.id == newRecordItem.id);
     if (idx != -1) {
       return copyWith(recordItems: List.of(recordItems)..[idx] = newRecordItem);

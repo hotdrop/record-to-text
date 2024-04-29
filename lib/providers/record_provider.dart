@@ -26,21 +26,24 @@ class _CurrentRecordNotifier extends Notifier<Record?> {
   Future<void> setRecordItem(RecordItem recordItem) async {
     if (state == null) {
       final text = recordItem.speechToText ?? 'no data';
-      state = await ref.read(recordRepositoryProvider).saveNew(
+      state = await ref.read(recordRepositoryProvider).saveNewRecord(
             title: text.substring(0, min(30, text.length)),
             recordItem: recordItem,
           );
+      // リストのタイトルしか持たないのでリストのロードが必要なのは新規登録時のみ
+      await ref.read(recordsProvider.notifier).onLoad();
     } else {
       // 既存録音データに追加
-      state!.upsertRecoreFile(recordItem);
-      await ref.read(recordRepositoryProvider).update(state!);
+      final updateRecord = state!.setRecoreItem(recordItem);
+      await ref.read(recordRepositoryProvider).saveRecordItem(recordId: updateRecord.id, item: recordItem);
+      state = updateRecord;
     }
   }
 
   Future<void> setSummaryTextResult(SummaryTextResult result) async {
     if (state != null) {
       final recordAddSummary = state!.copyWith(summaryTextResult: result);
-      await ref.read(recordRepositoryProvider).update(recordAddSummary);
+      await ref.read(recordRepositoryProvider).saveSummary(recordId: state!.id, summaryTextResult: result);
       state = recordAddSummary;
     }
   }

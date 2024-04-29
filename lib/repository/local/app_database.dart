@@ -3,6 +3,8 @@ import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart' as path;
 import 'package:recorod_to_text/common/app_logger.dart';
 import 'package:recorod_to_text/repository/local/entity/record_entity.dart';
+import 'package:recorod_to_text/repository/local/entity/record_item_entity.dart';
+import 'package:recorod_to_text/repository/local/entity/record_summary_entity.dart';
 
 final databaseProvider = Provider((_) => const AppDatabase());
 
@@ -30,7 +32,11 @@ class AppDatabase {
     AppLogger.d('Isarを初期化します');
     final dirPath = await getDirectoryPath();
     _instance = await Isar.open(
-      [RecordEntitySchema],
+      [
+        RecordEntitySchema,
+        RecordItemEntitySchema,
+        RecordSummaryEntitySchema,
+      ],
       directory: dirPath,
     );
   }
