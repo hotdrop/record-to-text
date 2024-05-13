@@ -6,6 +6,7 @@ import 'package:recorod_to_text/providers/record_title_provider.dart';
 import 'package:recorod_to_text/providers/select_menu_provider.dart';
 import 'package:recorod_to_text/ui/app_setting_contents.dart';
 import 'package:recorod_to_text/ui/record_contents.dart';
+import 'package:recorod_to_text/ui/widgets/row_record_title.dart';
 
 class BasePage extends ConsumerWidget {
   const BasePage({super.key});
@@ -126,20 +127,12 @@ class _RowRecordTitle extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectRecordTitleId = ref.watch(selectRecordTitleIdStateProvider);
-    final isSelected = selectRecordTitleId == recordOnlyTitle.id;
-
     return Tooltip(
       message: recordOnlyTitle.title,
-      child: ListTile(
-        leading: const Icon(Icons.history),
-        title: Text(
-          recordOnlyTitle.title,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(color: (onTap != null) ? null : Colors.grey),
-        ),
+      child: RowRecordTitle(
+        recordOnlyTitle: recordOnlyTitle,
+        isSelected: selectRecordTitleId == recordOnlyTitle.id,
         onTap: onTap,
-        selected: isSelected,
-        selectedTileColor: isSelected ? const Color.fromARGB(255, 211, 210, 210) : null,
       ),
     );
   }
