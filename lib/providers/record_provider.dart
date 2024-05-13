@@ -31,7 +31,7 @@ class _CurrentRecordNotifier extends Notifier<Record?> {
             recordItem: recordItem,
           );
       // リストのタイトルしか持たないのでリストのロードが必要なのは新規登録時のみ
-      await ref.read(recordsProvider.notifier).onLoad();
+      await ref.read(recordTitlesProvider.notifier).onLoad();
     } else {
       // 既存録音データに追加
       final updateRecord = state!.setRecoreItem(recordItem);
@@ -49,9 +49,9 @@ class _CurrentRecordNotifier extends Notifier<Record?> {
   }
 }
 
-final recordsProvider = NotifierProvider<_RecordsNotifier, List<RecordOnlyTitle>>(_RecordsNotifier.new);
+final recordTitlesProvider = NotifierProvider<_RecordTitlesNotifier, List<RecordOnlyTitle>>(_RecordTitlesNotifier.new);
 
-class _RecordsNotifier extends Notifier<List<RecordOnlyTitle>> {
+class _RecordTitlesNotifier extends Notifier<List<RecordOnlyTitle>> {
   @override
   List<RecordOnlyTitle> build() {
     return [];
@@ -64,24 +64,24 @@ class _RecordsNotifier extends Notifier<List<RecordOnlyTitle>> {
 
   Future<void> selectRecord(RecordOnlyTitle recordOnlyTitle) async {
     ref.read(recordLoadingProvider.notifier).state = true;
-
+    ref.invalidate(selectRecordItemStateProvider);
+    ref.read(selectRecordTitleIdStateProvider.notifier).state = recordOnlyTitle.id;
     final targetRecord = await ref.read(recordRepositoryProvider).find(recordOnlyTitle.id);
     await ref.read(currentRecordProvider.notifier).setCurrentRecord(targetRecord);
-
     ref.read(recordLoadingProvider.notifier).state = false;
   }
 
   Future<void> clear() async {
-    ref.read(recordLoadingProvider.notifier).state = true;
+    ref.invalidate(selectRecordTitleIdStateProvider);
+    ref.invalidate(currentRecordProvider);
     ref.invalidate(recordItemsProvider);
     ref.invalidate(summaryControllerProvider);
     ref.invalidate(selectRecordItemStateProvider);
-    ref.read(currentRecordProvider.notifier).state = null;
-    ref.read(recordLoadingProvider.notifier).state = false;
   }
 
   ///
   /// 録音データを保存する
+  /// TODO このメソッドが_RecordTitlesNotifierにあるのはおかしいので移動する
   ///
   Future<void> addRecordItem(RecordItem recordItem) async {
     final currentRecord = ref.read(currentRecordProvider);
@@ -96,6 +96,7 @@ class _RecordsNotifier extends Notifier<List<RecordOnlyTitle>> {
 
   ///
   /// 履歴情報にサマリーデータを追加
+  /// TODO このメソッドが_RecordTitlesNotifierにあるのはおかしいので移動する
   ///
   Future<void> addSummaryTextResult(SummaryTextResult result) async {
     await ref.read(currentRecordProvider.notifier).setSummaryTextResult(result);
@@ -103,3 +104,6 @@ class _RecordsNotifier extends Notifier<List<RecordOnlyTitle>> {
 }
 
 final recordLoadingProvider = StateProvider<bool>((_) => false);
+
+// 選択中の録音タイトルIDを保持する
+final selectRecordTitleIdStateProvider = StateProvider<int>((_) => 0);

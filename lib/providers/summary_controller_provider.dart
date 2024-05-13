@@ -30,7 +30,7 @@ class SummaryControllerNotifier extends AsyncNotifier<SummaryTextResult?> {
     }
     final targetText = successRecordItems.map((e) => e.speechToText ?? '').join('');
     final summaryResult = await ref.read(gptRepositoryProvider).requestSummary(targetText);
-    ref.read(recordsProvider.notifier).addSummaryTextResult(summaryResult);
+    ref.read(recordTitlesProvider.notifier).addSummaryTextResult(summaryResult);
     return summaryResult;
   }
 
@@ -47,7 +47,7 @@ class SummaryControllerNotifier extends AsyncNotifier<SummaryTextResult?> {
       final successRecordItems = recordItems.where((r) => r.isSuccess());
       final targetText = successRecordItems.map((e) => e.speechToText ?? '').join('');
       final summaryResult = await ref.read(gptRepositoryProvider).requestSummary(targetText);
-      ref.read(recordsProvider.notifier).addSummaryTextResult(summaryResult);
+      ref.read(recordTitlesProvider.notifier).addSummaryTextResult(summaryResult);
       return summaryResult;
     });
   }

@@ -15,7 +15,7 @@ final appInitFutureProvider = FutureProvider((ref) async {
   await ref.read(databaseProvider).init();
 
   // 録音データロード
-  await ref.read(recordsProvider.notifier).onLoad();
+  await ref.read(recordTitlesProvider.notifier).onLoad();
 
   // 設定系の値を取得
   final minutes = await ref.read(appSettingsRepositoryProvider).getRecordIntervalMinutes();
