@@ -54,7 +54,6 @@ class _MenuList extends ConsumerWidget {
         ),
         const Divider(),
         const _ListViewRecords(),
-        const Spacer(),
         const Divider(),
         _SelectMenu(
           icon: Icons.settings,
