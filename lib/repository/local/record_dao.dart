@@ -3,6 +3,7 @@ import 'package:isar/isar.dart';
 
 import 'package:recorod_to_text/models/record.dart';
 import 'package:recorod_to_text/models/record_item.dart';
+import 'package:recorod_to_text/models/record_title.dart';
 import 'package:recorod_to_text/models/summary_text_result.dart';
 import 'package:recorod_to_text/repository/local/app_database.dart';
 import 'package:recorod_to_text/repository/local/entity/record_entity.dart';

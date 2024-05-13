@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:recorod_to_text/common/app_logger.dart';
 import 'package:recorod_to_text/models/record.dart';
 import 'package:recorod_to_text/models/record_item.dart';
+import 'package:recorod_to_text/models/record_title.dart';
 import 'package:recorod_to_text/models/summary_text_result.dart';
 import 'package:recorod_to_text/repository/local/record_dao.dart';
 

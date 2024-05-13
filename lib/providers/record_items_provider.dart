@@ -50,14 +50,14 @@ class RecordItemsNotifier extends Notifier<List<RecordItem>> {
         speechToTextExecTime: result.executeTime,
         status: RecordToTextStatus.success,
       );
-      ref.read(recordTitlesProvider.notifier).addRecordItem(newRecordItem);
+      ref.read(currentRecordProvider.notifier).addRecordItem(newRecordItem);
       return newRecordItem;
     } catch (e) {
       final newRecordItem = recordItem.copyWith(
         status: RecordToTextStatus.error,
         errorMessage: '$e',
       );
-      ref.read(recordTitlesProvider.notifier).addRecordItem(newRecordItem);
+      ref.read(currentRecordProvider.notifier).addRecordItem(newRecordItem);
       return newRecordItem;
     }
   }

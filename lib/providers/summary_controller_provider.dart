@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:recorod_to_text/models/summary_text_result.dart';
 import 'package:recorod_to_text/providers/record_provider.dart';
 import 'package:recorod_to_text/providers/record_items_provider.dart';
+import 'package:recorod_to_text/providers/record_title_provider.dart';
 import 'package:recorod_to_text/repository/gpt_repository.dart';
 
 final summaryControllerProvider = AsyncNotifierProvider<SummaryControllerNotifier, SummaryTextResult?>(SummaryControllerNotifier.new);
@@ -18,19 +19,21 @@ class SummaryControllerNotifier extends AsyncNotifier<SummaryTextResult?> {
       return state.value;
     }
 
-    // 履歴選択時のロード中状態でもサマリーしない
-    final isRecording = ref.read(recordLoadingProvider);
-    if (isRecording) {
+    // タイトル選択時のロード中状態でもサマリーしない
+    final isDataLoading = ref.read(recordDataLoadingStateProvider);
+    if (isDataLoading) {
       return state.value;
     }
 
+    // 全部エラーになっている場合はサマリーを実行するだけ無駄なのでリターン
     final successRecordItems = recordItems.where((r) => r.isSuccess());
     if (successRecordItems.isEmpty) {
       return null;
     }
+
     final targetText = successRecordItems.map((e) => e.speechToText ?? '').join('');
     final summaryResult = await ref.read(gptRepositoryProvider).requestSummary(targetText);
-    ref.read(recordTitlesProvider.notifier).addSummaryTextResult(summaryResult);
+    ref.read(currentRecordProvider.notifier).setSummaryTextResult(summaryResult);
     return summaryResult;
   }
 
@@ -47,7 +50,7 @@ class SummaryControllerNotifier extends AsyncNotifier<SummaryTextResult?> {
       final successRecordItems = recordItems.where((r) => r.isSuccess());
       final targetText = successRecordItems.map((e) => e.speechToText ?? '').join('');
       final summaryResult = await ref.read(gptRepositoryProvider).requestSummary(targetText);
-      ref.read(recordTitlesProvider.notifier).addSummaryTextResult(summaryResult);
+      ref.read(currentRecordProvider.notifier).setSummaryTextResult(summaryResult);
       return summaryResult;
     });
   }

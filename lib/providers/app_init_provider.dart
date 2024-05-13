@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:recorod_to_text/providers/app_setting_provider.dart';
-import 'package:recorod_to_text/providers/record_provider.dart';
+import 'package:recorod_to_text/providers/record_title_provider.dart';
 import 'package:recorod_to_text/repository/app_setting_repository.dart';
 import 'package:recorod_to_text/repository/local/app_database.dart';
 

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:recorod_to_text/models/record.dart';
-import 'package:recorod_to_text/providers/record_provider.dart';
+import 'package:recorod_to_text/models/record_title.dart';
 import 'package:recorod_to_text/providers/record_controller_provider.dart';
+import 'package:recorod_to_text/providers/record_title_provider.dart';
 import 'package:recorod_to_text/providers/select_menu_provider.dart';
 import 'package:recorod_to_text/ui/app_setting_contents.dart';
 import 'package:recorod_to_text/ui/record_contents.dart';
@@ -81,7 +81,7 @@ class _ListViewRecords extends ConsumerWidget {
           onTap: nowRecording
               ? null
               : () async {
-                  await ref.read(recordTitlesProvider.notifier).selectRecord(recordTitles[index]);
+                  await ref.read(recordTitlesProvider.notifier).select(recordTitles[index]);
                   ref.read(selectMenuProvider.notifier).selectRecordMenu();
                 },
         ),
