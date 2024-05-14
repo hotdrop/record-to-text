@@ -25,6 +25,12 @@ class _RowRecordTitleState extends State<RowRecordTitle> {
     super.initState();
     _controller.text = widget.recordOnlyTitle.title;
     _originalTitle = widget.recordOnlyTitle.title;
+
+    _focusNode.addListener(() {
+      if (!_focusNode.hasFocus && _isEditing) {
+        setState(() => _isEditing = false);
+      }
+    });
   }
 
   @override
@@ -43,17 +49,17 @@ class _RowRecordTitleState extends State<RowRecordTitle> {
 
   Widget _listTileTitle() {
     if (_isEditing) {
-      return KeyboardListener(
-        focusNode: FocusNode(),
-        onKeyEvent: (event) {
+      return Focus(
+        onKeyEvent: (FocusNode node, KeyEvent event) {
           if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.escape) {
-            _controller.text = _originalTitle;
-            // unfocusするとBackSpaceが効かなくなってしまうので代替案を考える・・
-            // _focusNode.unfocus();
             setState(() {
+              _controller.text = _originalTitle;
               _isEditing = false;
             });
+            _focusNode.unfocus();
+            return KeyEventResult.handled;
           }
+          return KeyEventResult.ignored;
         },
         child: TextField(
           controller: _controller,
@@ -79,10 +85,10 @@ class _RowRecordTitleState extends State<RowRecordTitle> {
         padding: const EdgeInsets.only(left: 8),
         child: IconButton(
           onPressed: () {
-            _focusNode.requestFocus();
             setState(() {
               _isEditing = true;
             });
+            _focusNode.requestFocus();
           },
           icon: const Icon(Icons.edit),
         ),
