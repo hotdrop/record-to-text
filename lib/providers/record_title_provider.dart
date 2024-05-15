@@ -18,6 +18,20 @@ class _RecordTitlesNotifier extends Notifier<List<RecordOnlyTitle>> {
     state = [...recordOnlyTitles];
   }
 
+  Future<void> updateTitle({required RecordOnlyTitle recordOnlyTitle, required String newTitle}) async {
+    await ref.read(recordRepositoryProvider).updateTitle(
+          id: recordOnlyTitle.id,
+          newTitle: newTitle,
+        );
+    final idx = state.indexWhere((e) => e.id == recordOnlyTitle.id);
+    state = List.of(state)
+      ..[idx] = RecordOnlyTitle(
+        id: recordOnlyTitle.id,
+        title: newTitle,
+        createAt: recordOnlyTitle.createAt,
+      );
+  }
+
   Future<void> select(RecordOnlyTitle recordOnlyTitle) async {
     // ごちゃごちゃしているので処理をそのまま日本語コメントにしています。
     // UIをローディング状態にする

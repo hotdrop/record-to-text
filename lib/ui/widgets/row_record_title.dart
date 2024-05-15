@@ -3,11 +3,18 @@ import 'package:flutter/services.dart';
 import 'package:recorod_to_text/models/record_title.dart';
 
 class RowRecordTitle extends StatefulWidget {
-  const RowRecordTitle({super.key, required this.recordOnlyTitle, required this.isSelected, required this.onTap});
+  const RowRecordTitle({
+    super.key,
+    required this.recordOnlyTitle,
+    required this.isSelected,
+    required this.onTap,
+    required this.onTitleEditted,
+  });
 
   final RecordOnlyTitle recordOnlyTitle;
   final bool isSelected;
   final VoidCallback? onTap;
+  final Function(String) onTitleEditted;
 
   @override
   State<RowRecordTitle> createState() => _RowRecordTitleState();
@@ -16,7 +23,6 @@ class RowRecordTitle extends StatefulWidget {
 class _RowRecordTitleState extends State<RowRecordTitle> {
   bool _isHovering = false;
   bool _isEditing = false;
-  String _originalTitle = "";
   final _controller = TextEditingController();
   final FocusNode _focusNode = FocusNode();
 
@@ -24,8 +30,6 @@ class _RowRecordTitleState extends State<RowRecordTitle> {
   void initState() {
     super.initState();
     _controller.text = widget.recordOnlyTitle.title;
-    _originalTitle = widget.recordOnlyTitle.title;
-
     _focusNode.addListener(() {
       if (!_focusNode.hasFocus && _isEditing) {
         setState(() => _isEditing = false);
@@ -53,7 +57,7 @@ class _RowRecordTitleState extends State<RowRecordTitle> {
         onKeyEvent: (FocusNode node, KeyEvent event) {
           if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.escape) {
             setState(() {
-              _controller.text = _originalTitle;
+              _controller.text = widget.recordOnlyTitle.title;
               _isEditing = false;
             });
             _focusNode.unfocus();
@@ -65,8 +69,10 @@ class _RowRecordTitleState extends State<RowRecordTitle> {
           controller: _controller,
           focusNode: _focusNode,
           onSubmitted: (value) {
-            // TODO 入力した内容をDBに反映する
-            setState(() => _isEditing = false);
+            setState(() {
+              widget.onTitleEditted(value);
+              _isEditing = false;
+            });
           },
         ),
       );

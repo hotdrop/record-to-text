@@ -34,6 +34,17 @@ class _RecordDao {
         .toList();
   }
 
+  Future<void> updateRecordTitle({required int id, required String newTitle}) async {
+    final isar = ref.read(databaseProvider).isar;
+    await isar.writeTxn(() async {
+      final targetItem = await isar.recordEntitys.filter().idEqualTo(id).findFirst();
+      if (targetItem != null) {
+        final item = _recordOnlyTitleToEntity(newTitle, targetItem.createAt)..id = id;
+        await isar.recordEntitys.put(item);
+      }
+    });
+  }
+
   Future<Record> find(int id) async {
     final isar = ref.read(databaseProvider).isar;
 
@@ -107,6 +118,13 @@ class _RecordDao {
     }
 
     return SummaryTextResult(entity.summaryText, entity.summaryExecuteTime);
+  }
+
+  RecordEntity _recordOnlyTitleToEntity(String newTitle, DateTime newCreateAt) {
+    return RecordEntity(
+      title: newTitle,
+      createAt: newCreateAt,
+    );
   }
 
   RecordItemEntity _recordItemToEntity(int recordId, RecordItem item) {

@@ -133,6 +133,9 @@ class _RowRecordTitle extends ConsumerWidget {
         recordOnlyTitle: recordOnlyTitle,
         isSelected: selectRecordTitleId == recordOnlyTitle.id,
         onTap: onTap,
+        onTitleEditted: (String newTitle) {
+          ref.read(recordTitlesProvider.notifier).updateTitle(recordOnlyTitle: recordOnlyTitle, newTitle: newTitle);
+        },
       ),
     );
   }

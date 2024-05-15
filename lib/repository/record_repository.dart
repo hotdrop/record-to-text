@@ -22,6 +22,10 @@ class _RecordRepoistory {
     return titles;
   }
 
+  Future<void> updateTitle({required int id, required String newTitle}) async {
+    await ref.read(recordDaoProvider).updateRecordTitle(id: id, newTitle: newTitle);
+  }
+
   Future<Record> find(int recordId) async {
     return await ref.read(recordDaoProvider).find(recordId);
   }
