@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:recorod_to_text/common/app_logger.dart';
 import 'package:recorod_to_text/models/record.dart';
 import 'package:recorod_to_text/models/record_item.dart';
+import 'package:recorod_to_text/models/record_title.dart';
 import 'package:recorod_to_text/models/summary_text_result.dart';
 import 'package:recorod_to_text/repository/local/record_dao.dart';
 
@@ -19,6 +20,10 @@ class _RecordRepoistory {
     final titles = await ref.read(recordDaoProvider).findRecordOnlyTitles();
     titles.sort((a, b) => b.createAt.compareTo(a.createAt));
     return titles;
+  }
+
+  Future<void> updateTitle({required int id, required String newTitle}) async {
+    await ref.read(recordDaoProvider).updateRecordTitle(id: id, newTitle: newTitle);
   }
 
   Future<Record> find(int recordId) async {

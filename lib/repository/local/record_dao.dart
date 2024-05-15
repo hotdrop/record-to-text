@@ -3,6 +3,7 @@ import 'package:isar/isar.dart';
 
 import 'package:recorod_to_text/models/record.dart';
 import 'package:recorod_to_text/models/record_item.dart';
+import 'package:recorod_to_text/models/record_title.dart';
 import 'package:recorod_to_text/models/summary_text_result.dart';
 import 'package:recorod_to_text/repository/local/app_database.dart';
 import 'package:recorod_to_text/repository/local/entity/record_entity.dart';
@@ -31,6 +32,17 @@ class _RecordDao {
               createAt: e.createAt,
             ))
         .toList();
+  }
+
+  Future<void> updateRecordTitle({required int id, required String newTitle}) async {
+    final isar = ref.read(databaseProvider).isar;
+    await isar.writeTxn(() async {
+      final targetItem = await isar.recordEntitys.filter().idEqualTo(id).findFirst();
+      if (targetItem != null) {
+        final item = _recordOnlyTitleToEntity(newTitle, targetItem.createAt)..id = id;
+        await isar.recordEntitys.put(item);
+      }
+    });
   }
 
   Future<Record> find(int id) async {
@@ -106,6 +118,13 @@ class _RecordDao {
     }
 
     return SummaryTextResult(entity.summaryText, entity.summaryExecuteTime);
+  }
+
+  RecordEntity _recordOnlyTitleToEntity(String newTitle, DateTime newCreateAt) {
+    return RecordEntity(
+      title: newTitle,
+      createAt: newCreateAt,
+    );
   }
 
   RecordItemEntity _recordItemToEntity(int recordId, RecordItem item) {

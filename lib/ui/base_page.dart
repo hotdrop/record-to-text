@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:recorod_to_text/providers/record_provider.dart';
+import 'package:recorod_to_text/models/record_title.dart';
 import 'package:recorod_to_text/providers/record_controller_provider.dart';
+import 'package:recorod_to_text/providers/record_title_provider.dart';
 import 'package:recorod_to_text/providers/select_menu_provider.dart';
 import 'package:recorod_to_text/ui/app_setting_contents.dart';
 import 'package:recorod_to_text/ui/record_contents.dart';
-import 'package:recorod_to_text/ui/widgets/row_record.dart';
+import 'package:recorod_to_text/ui/widgets/row_record_title.dart';
 
 class BasePage extends ConsumerWidget {
   const BasePage({super.key});
@@ -44,17 +45,16 @@ class _MenuList extends ConsumerWidget {
           icon: Icons.record_voice_over,
           label: 'New Record',
           onTap: () {
-            // TODO 履歴が選択されている場合があるのでリストをクリアする。録音中はクリアしない。履歴機能ができたらこの分岐は不要
             final isRecording = ref.read(nowRecordingProvider);
-            if (!isRecording) {
-              ref.read(recordsProvider.notifier).clear();
+            if (isRecording) {
+              return;
             }
+            ref.read(recordTitlesProvider.notifier).clear();
             ref.read(selectMenuProvider.notifier).selectRecordMenu();
           },
         ),
         const Divider(),
         const _ListViewRecords(),
-        const Spacer(),
         const Divider(),
         _SelectMenu(
           icon: Icons.settings,
@@ -71,18 +71,18 @@ class _ListViewRecords extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final recordTitles = ref.watch(recordsProvider);
+    final recordTitles = ref.watch(recordTitlesProvider);
     final nowRecording = ref.watch(nowRecordingProvider);
 
     return Expanded(
       child: ListView.builder(
         itemCount: recordTitles.length,
-        itemBuilder: (context, index) => RowRecord(
+        itemBuilder: (context, index) => _RowRecordTitle(
           recordTitles[index],
           onTap: nowRecording
               ? null
               : () async {
-                  await ref.read(recordsProvider.notifier).selectRecord(recordTitles[index]);
+                  await ref.read(recordTitlesProvider.notifier).select(recordTitles[index]);
                   ref.read(selectMenuProvider.notifier).selectRecordMenu();
                 },
         ),
@@ -91,7 +91,7 @@ class _ListViewRecords extends ConsumerWidget {
   }
 }
 
-class _SelectMenu extends StatelessWidget {
+class _SelectMenu extends ConsumerWidget {
   const _SelectMenu({required this.icon, required this.label, required this.onTap});
 
   final IconData icon;
@@ -99,18 +99,43 @@ class _SelectMenu extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final nowRecording = ref.watch(nowRecordingProvider);
+
     return InkWell(
-      onTap: onTap,
+      onTap: nowRecording ? null : onTap,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
         child: Row(
           children: [
             Icon(icon),
             const SizedBox(width: 8),
-            Text(label),
+            Text(label, style: TextStyle(color: nowRecording ? Colors.grey : null)),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _RowRecordTitle extends ConsumerWidget {
+  const _RowRecordTitle(this.recordOnlyTitle, {required this.onTap});
+
+  final RecordOnlyTitle recordOnlyTitle;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final selectRecordTitleId = ref.watch(selectRecordTitleIdStateProvider);
+    return Tooltip(
+      message: recordOnlyTitle.title,
+      child: RowRecordTitle(
+        recordOnlyTitle: recordOnlyTitle,
+        isSelected: selectRecordTitleId == recordOnlyTitle.id,
+        onTap: onTap,
+        onTitleEditted: (String newTitle) {
+          ref.read(recordTitlesProvider.notifier).updateTitle(recordOnlyTitle: recordOnlyTitle, newTitle: newTitle);
+        },
       ),
     );
   }

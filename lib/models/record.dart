@@ -1,13 +1,6 @@
 import 'package:recorod_to_text/models/record_item.dart';
 import 'package:recorod_to_text/models/summary_text_result.dart';
 
-class RecordOnlyTitle {
-  const RecordOnlyTitle({required this.id, required this.title, required this.createAt});
-  final int id;
-  final String title;
-  final DateTime createAt;
-}
-
 class Record {
   const Record({
     required this.id,

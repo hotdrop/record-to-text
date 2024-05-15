@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:recorod_to_text/providers/app_setting_provider.dart';
-import 'package:recorod_to_text/providers/record_provider.dart';
 import 'package:recorod_to_text/providers/record_items_provider.dart';
 import 'package:recorod_to_text/providers/record_controller_provider.dart';
+import 'package:recorod_to_text/providers/record_title_provider.dart';
 import 'package:recorod_to_text/providers/summary_controller_provider.dart';
 import 'package:recorod_to_text/providers/timer_provider.dart';
 import 'package:recorod_to_text/ui/widgets/record_to_text_view.dart';
@@ -15,8 +15,8 @@ class RecordContents extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final nowRecording = ref.watch(recordLoadingProvider);
-    if (nowRecording) {
+    final nowDataLoading = ref.watch(recordDataLoadingStateProvider);
+    if (nowDataLoading) {
       return const Center(child: CircularProgressIndicator());
     }
 

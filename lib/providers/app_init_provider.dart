@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:recorod_to_text/providers/app_setting_provider.dart';
-import 'package:recorod_to_text/providers/record_provider.dart';
+import 'package:recorod_to_text/providers/record_title_provider.dart';
 import 'package:recorod_to_text/repository/app_setting_repository.dart';
 import 'package:recorod_to_text/repository/local/app_database.dart';
 
@@ -15,7 +15,7 @@ final appInitFutureProvider = FutureProvider((ref) async {
   await ref.read(databaseProvider).init();
 
   // 録音データロード
-  await ref.read(recordsProvider.notifier).onLoad();
+  await ref.read(recordTitlesProvider.notifier).onLoad();
 
   // 設定系の値を取得
   final minutes = await ref.read(appSettingsRepositoryProvider).getRecordIntervalMinutes();
