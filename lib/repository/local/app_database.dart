@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart' as path;
@@ -31,6 +32,9 @@ class AppDatabase {
     }
     AppLogger.d('Isarを初期化します');
     final dirPath = await getDirectoryPath();
+    // デバッグ用とリリース用でIsarのデータファイル名を分ける
+    const isarName = kReleaseMode ? 'release_db' : Isar.defaultName;
+
     _instance = await Isar.open(
       [
         RecordEntitySchema,
@@ -38,6 +42,7 @@ class AppDatabase {
         RecordSummaryEntitySchema,
       ],
       directory: dirPath,
+      name: isarName,
     );
   }
 
