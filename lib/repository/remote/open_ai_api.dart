@@ -49,7 +49,7 @@ class _OpenAiApi {
       final response = await dio.post(
         'https://api.openai.com/v1/chat/completions',
         data: {
-          'model': 'gpt-4-turbo',
+          'model': 'gpt-4o',
           'messages': [
             {'role': 'user', 'content': '${appSetting.summaryPrompt} $text'},
           ],
