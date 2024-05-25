@@ -76,6 +76,7 @@ class _ListViewRecords extends ConsumerWidget {
 
     return Expanded(
       child: ListView.builder(
+        key: ValueKey(recordTitles.length),
         itemCount: recordTitles.length,
         itemBuilder: (context, index) => _RowRecordTitle(
           recordTitles[index],

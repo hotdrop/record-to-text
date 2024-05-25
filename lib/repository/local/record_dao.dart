@@ -49,13 +49,15 @@ class _RecordDao {
     final isar = ref.read(databaseProvider).isar;
 
     final targetRecord = await isar.recordEntitys.filter().idEqualTo(id).findFirst();
-    final targetItems = await isar.recordItemEntitys.filter().recordIdEqualTo(id).findAll();
+    final recordItemEntities = await isar.recordItemEntitys.filter().recordIdEqualTo(id).findAll();
+    final recordItems = recordItemEntities.map((item) => _entityToRecordItem(item)).toList();
+    recordItems.sort((a, b) => b.id.compareTo(a.id));
     final targetSummary = await isar.recordSummaryEntitys.filter().recordIdEqualTo(id).findFirst();
 
     return Record(
       id: targetRecord!.id,
       title: targetRecord.title,
-      recordItems: targetItems.map((item) => _entityToRecordItem(item)).toList(),
+      recordItems: recordItems,
       summaryTextResult: _entityToSummary(targetSummary),
       createAt: targetRecord.createAt,
     );

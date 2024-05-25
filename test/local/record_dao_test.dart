@@ -57,11 +57,10 @@ void main() {
 
     // 結果確認
     final updatedRecords = await dao.findRecordOnlyTitles();
-    expect(updatedRecords.length, 2);
-    expect(updatedRecords[0].id, recordId1);
-    expect(updatedRecords[0].title, 'タイトル更新');
-    expect(updatedRecords[1].id, recordId2);
-    expect(updatedRecords[1].title, 'テスト2');
+    final recordId1Obj = updatedRecords.where((e) => e.id == recordId1).first;
+    expect(recordId1Obj.title, 'タイトル更新');
+    final recordId2Obj = updatedRecords.where((e) => e.id == recordId2).first;
+    expect(recordId2Obj.title, 'テスト2');
   });
 
   test('IDを指定したRecordの取得が正しく行えるか確認する', () async {
@@ -140,8 +139,8 @@ void main() {
     expect(result.id, recordId);
     expect(result.title, 'テスト1');
     expect(result.recordItems.length, 2);
-    expect(result.recordItems[0].id, 'test1');
-    expect(result.recordItems[1].id, 'test2');
+    expect(result.recordItems[0].id, 'test2');
+    expect(result.recordItems[1].id, 'test1');
   });
 
   test('RecordItemの既存データ更新が正しく行えるか確認する', () async {

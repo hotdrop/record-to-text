@@ -28,7 +28,7 @@ class _RecordNotifier extends Notifier<Record?> {
   }
 
   ///
-  /// 時間間隔で区切られた詳細録音データの1つのアイテムを選択状態にする
+  /// 録音データを追加する
   ///
   Future<void> setRecordItem(RecordItem recordItem) async {
     if (state == null) {
@@ -37,26 +37,13 @@ class _RecordNotifier extends Notifier<Record?> {
             title: text.substring(0, min(30, text.length)),
             recordItem: recordItem,
           );
-      // 新規登録時のみ、録音データのタイトルをリロードする
+      // 新規登録時では録音データのタイトルがRepositoryに追加されているはずなのでタイトル一覧をロードする
       await ref.read(recordTitlesProvider.notifier).onLoad();
     } else {
       // 既存録音データに追加
       final updateRecord = state!.setRecoreItem(recordItem);
       await ref.read(recordRepositoryProvider).saveRecordItem(recordId: updateRecord.id, item: recordItem);
       state = updateRecord;
-    }
-  }
-
-  ///
-  /// 録音データを保存する
-  ///
-  Future<void> addRecordItem(RecordItem recordItem) async {
-    if (state == null) {
-      setRecordItem(recordItem);
-      // 履歴を選択していない＝録音データが新規の場合はタイトル一覧をロードする
-      await ref.read(recordTitlesProvider.notifier).onLoad();
-    } else {
-      setRecordItem(recordItem);
     }
   }
 
